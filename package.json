@@ -1,7 +1,7 @@
 {
     "name": "gsolid",
     "version": "0.1.0",
-    "description": "",
+    "description": "GTK renderer for solid-js",
     "main": "./dist/index.js",
     "type": "module",
     "types": "./types/index.d.ts",
