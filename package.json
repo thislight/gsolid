@@ -1,0 +1,74 @@
+{
+    "name": "gsolid",
+    "version": "0.1.0",
+    "description": "",
+    "main": "./dist/index.js",
+    "type": "module",
+    "types": "./types/index.d.ts",
+    "sideEffect": false,
+    "exports": {
+        ".": {
+            "types": "./types/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        },
+        "./jsx-runtime": {
+            "types": "./types/jsx-runtime.d.ts",
+            "import": "./dist/jsx-runtime.js",
+            "require": "./dist/jsx-runtime.cjs"
+        },
+        "./widget": {
+            "types": "./types/widget.d.ts",
+            "import": "./dist/widget.jsx",
+            "require": null
+        },
+        "./gtk4": {
+            "types": "./types/gtk4/index.d.ts",
+            "import": "./dist/gtk4/index.js",
+            "require": "./dist/gtk4/index.cjs"
+        },
+        "./fetch": {
+            "types": "./types/fetch.d.ts",
+            "import": "./dist/fetch.js",
+            "require": "./dist/fetch.cjs"
+        },
+        "./web-ponyfill": {
+            "types": "./types/web-ponyfill.d.ts",
+            "import": "./dist/web-ponyfill.js",
+            "require": "./dist/web-ponyfill.cjs"
+        }
+    },
+    "files": [
+        "./dist/**",
+        "./types/**",
+        "./.editorconfig",
+        "./LICENSE",
+        "./tsconfig.json",
+        "./README.md"
+    ],
+    "scripts": {
+        "build:types": "tsc",
+        "build:esm": "ts-node -T --esm build.ts",
+        "build": "run-p build:*",
+        "prepare": "run-p build:*"
+    },
+    "keywords": ["gjs", "solid-js", "jsx", "tsx"],
+    "maintainers": [
+        "Rubicon Rowe <l1589002388@gmail.com>"
+    ],
+    "license": "Apache-2.0",
+    "dependencies": {
+        "solid-js": "^1.7.7"
+    },
+    "devDependencies": {
+        "@girs/gjs": "^3.2.0",
+        "@girs/gtk-3.0": "3.24.38-3.2.0",
+        "@girs/gtk-4.0": "4.10.4-3.2.0",
+        "@girs/soup-3.0": "3.4.2-3.2.0",
+        "esbuild": "^0.18.10",
+        "npm-run-all": "^4.1.5",
+        "solid-js": "^1.7.7",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.1.5"
+    }
+}

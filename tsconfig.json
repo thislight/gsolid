@@ -1,0 +1,37 @@
+{
+    "files": [
+        "src/index.ts",
+        "src/jsx-runtime.ts",
+        "src/widget.tsx",
+        "src/fetch.ts",
+        "src/web-ponyfill.ts"
+    ],
+    "include" : ["src/gtk4/*.tsx", "src/gtk4/*.ts"],
+    "compilerOptions": {
+        "emitDeclarationOnly": true,
+        "declaration": true,
+        "target": "esnext",
+        "newLine": "LF",
+        "module": "Node16",
+        "strict": true,
+        "jsx": "preserve",
+        "outDir": "types",
+        "isolatedModules": true,
+        "lib": [
+            "ES2015",
+            "ES2016",
+            "ES2017",
+            "ES2018",
+            "ES2019",
+            "ES2020",
+            "ES2021",
+            "ES2022",
+            "ESNext",
+            "DOM",
+        ],
+        "types": ["@girs/gjs", "@girs/gtk-4.0", "@girs/soup-3.0"],
+        "jsxImportSource": "gsolid",
+        "esModuleInterop": true,
+        "rootDir": "./src",
+    },
+}
