@@ -59,7 +59,7 @@ loop.run();
 
 - [esbuild-plugin-gsolid](https://github.com/thislight/esbuild-plugin-gsolid)
 
-Intersting on writing bundler for GSolid? See [Notes on build Applications](./docs/build-app.md).
+Interesting on writing bundler for GSolid? See [Notes on build Applications](./docs/build-app.md).
 
 ## Other Documents
 
@@ -68,7 +68,7 @@ Intersting on writing bundler for GSolid? See [Notes on build Applications](./do
 
 ## Special Libraries
 
-GSolid provides some libraries to improve UX for your UX in gjs.
+GSolid provides some libraries to improve UX for gjs.
 
 Mostly we create the library similiar to the Web API, but they are not 1:1 simulation to the API on the other platform.
 
