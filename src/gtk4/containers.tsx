@@ -1,12 +1,12 @@
 /**
  * SPDX: Apache-2.0
  */
-import { Widget } from "../widget.jsx";
+import { Widget, forwardRef } from "../widget.jsx";
 import {
     Component,
     JSX,
+    children,
     createEffect,
-    onMount,
     splitProps,
 } from "../index.js";
 import Gtk from "gi://Gtk?version=4.0";
@@ -44,33 +44,30 @@ type BoxProps<T extends Gtk.Box = Gtk.Box> = {
  * The {@link Gtk.Box} widget arranges child widgets into a single row or column.
  */
 export const Box: Component<BoxProps> = (props) => {
-    const [p, rest] = splitProps(props, ["children"]);
+    const [p, rest] = splitProps(props, ["children", "ref"]);
     let ref: Gtk.Box;
-    if (props.ref) {
-        onMount(() => {
-            if (typeof props.ref === "function") {
-                props.ref(ref);
-            }
-        });
-    }
+    const childrenMemo = children(() => p.children);
     createEffect(() => {
+        const elements = childrenMemo.toArray();
         let child: Gtk.Widget | null = ref.get_first_child();
         while (child) {
             const current = child;
             child = child.get_next_sibling();
             ref.remove(current);
         }
-        if (p.children) {
-            if (Array.isArray(p.children)) {
-                for (const child of p.children) {
-                    ref.append(child);
-                }
-            } else {
-                ref.append(p.children);
+        if (elements) {
+            for (const child of elements) {
+                ref.append(child);
             }
         }
     });
-    return <Widget ref={ref!} Widget={Gtk.Box} {...rest} />;
+    return (
+        <Widget
+            ref={(r) => (ref = forwardRef(r, p.ref))}
+            Widget={Gtk.Box}
+            {...rest}
+        />
+    );
 };
 
 type CenterBoxPropBase<T extends Gtk.CenterBox = Gtk.CenterBox> = {
@@ -117,7 +114,7 @@ type CenterBoxProps<T extends Gtk.CenterBox = Gtk.CenterBox> = (
  */
 export const CenterBox: Component<CenterBoxProps> = (props) => {
     let ref: Gtk.CenterBox;
-    const [p, rest] = splitProps(props, ["children"]);
+    const [p, rest] = splitProps(props, ["children", "ref"]);
 
     const setChildrenOnce = (
         start: Gtk.Widget | null,
@@ -128,14 +125,6 @@ export const CenterBox: Component<CenterBoxProps> = (props) => {
         ref.set_center_widget(center);
         ref.set_end_widget(end);
     };
-
-    if (props.ref) {
-        onMount(() => {
-            if (typeof props.ref === "function") {
-                props.ref(ref);
-            }
-        });
-    }
 
     createEffect(() => {
         const children = p.children;
@@ -164,7 +153,13 @@ export const CenterBox: Component<CenterBoxProps> = (props) => {
             setChildrenOnce(null, null, null);
         }
     });
-    return <Widget ref={ref!} Widget={Gtk.CenterBox} {...rest} />;
+    return (
+        <Widget
+            ref={(r) => (ref = forwardRef(r, p.ref))}
+            Widget={Gtk.CenterBox}
+            {...rest}
+        />
+    );
 };
 
 type ScrolledWindowProps<T extends Gtk.ScrolledWindow = Gtk.ScrolledWindow> = {
@@ -237,16 +232,10 @@ type HeaderBarProps<T extends Gtk.HeaderBar = Gtk.HeaderBar> = {
     RefAble<T>;
 
 export const HeaderBar: Component<HeaderBarProps> = (props) => {
-    const [p, rest] = splitProps(props, ["start", "end"]);
+    const [p, rest] = splitProps(props, ["start", "end", "ref"]);
     let ref: Gtk.HeaderBar;
     const trackingWidgets: JSX.Element[] = [];
-    if (props.ref) {
-        onMount(() => {
-            if (typeof props.ref === "function") {
-                props.ref(ref);
-            }
-        });
-    }
+
     createEffect(() => {
         for (const element of trackingWidgets) {
             ref.remove(element);
@@ -265,5 +254,11 @@ export const HeaderBar: Component<HeaderBarProps> = (props) => {
                 trackingWidgets.push(element);
             }
     });
-    return <Widget ref={ref!} Widget={Gtk.HeaderBar} {...rest} />;
+    return (
+        <Widget
+            ref={(r) => (ref = forwardRef(r, p.ref))}
+            Widget={Gtk.HeaderBar}
+            {...rest}
+        />
+    );
 };
