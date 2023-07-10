@@ -41,3 +41,21 @@ Set the property "xxx", without any transform on the name.
 // Following will set "onSomeProperty" property, not connect the signal.
 <Component prop:onSomeProperty={value}>
 ````
+
+### `children`
+```jsx
+<Component1>
+    <Component2 />
+</Component1>
+```
+
+Above code is same as
+
+```jsx
+<Component1 children={<Component2 />}>
+```
+
+Like other properties, `children` is lazy in both gsolid and solid js. 
+
+It does not matter if you just passing the property to another component, but matters when consuming the children. You must evaluate the children at the render phase and only evaluate once. `createRenderEffect` plus `untrack` can do the trick, but the `children` helper is recommended.
+

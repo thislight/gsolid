@@ -4,9 +4,12 @@
 import { createRenderer } from "solid-js/universal";
 import Gtk from "gi://Gtk?version=4.0";
 import GObject from "gi://GObject";
+import type { Accessor, Component } from "./index.js";
 
 export declare namespace JSX {
     type Element = Gtk.Widget;
+    type ArrayElement = Element[];
+    type ElementType = Element | ArrayElement | Component<any> | Accessor<Element>
 
     interface IntrinsicElements {}
 }

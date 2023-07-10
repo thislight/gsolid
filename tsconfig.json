@@ -4,7 +4,8 @@
         "src/jsx-runtime.ts",
         "src/widget.tsx",
         "src/fetch.ts",
-        "src/web-ponyfill.ts"
+        "src/web-ponyfill.ts",
+        "src/reactive.ts",
     ],
     "include" : ["src/gtk4/*.tsx", "src/gtk4/*.ts"],
     "compilerOptions": {

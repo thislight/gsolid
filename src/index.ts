@@ -1,11 +1,9 @@
-/** 
+/**
  * SPDX: Apache-2.0
-*/
+ */
 import type { JSX } from "./jsx-runtime.js";
 export type { JSX } from "./jsx-runtime.js";
-export {render, spread as spreadProps} from "./jsx-runtime.js"
-
-
+export { render, spread as spreadProps } from "./jsx-runtime.js";
 
 // Forward Solid functions
 export {
@@ -32,16 +30,17 @@ export {
     from,
     mapArray,
     indexArray,
-    children,
     lazy,
     createSelector,
     batch,
     on,
-    onError,
     createRoot,
     getOwner,
     runWithOwner,
+    mergeProps,
 } from "solid-js";
+
+export {children} from "./reactive.js"
 
 export type { Accessor, AccessorArray, Setter } from "solid-js";
 
@@ -103,5 +102,3 @@ export type ComponentProps<T extends ValidComponent> = T extends Component<
  * Types of `props.ref`
  */
 export type Ref<T> = T | ((val: T) => void);
-
-
