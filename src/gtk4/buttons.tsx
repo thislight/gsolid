@@ -1,12 +1,8 @@
 /**
  * SPDX: Apache-2.0
  */
-import { Widget } from "../widget.jsx";
-import {
-    Component,
-    JSX,
-    splitProps,
-} from "../index.js";
+import { useWidget } from "../widget.jsx";
+import { Component, JSX, mergeProps, splitProps } from "../index.js";
 import Gtk from "gi://Gtk?version=4.0";
 import { GtkWidgetProps, GtkAccessibleProps, RefAble } from "./common.js";
 
@@ -28,8 +24,18 @@ type ButtonProps = (
     ButtonPropBase;
 
 export const Button: Component<ButtonProps> = (props) => {
-    const [{ children }, rest] = splitProps(props, ["children"]);
-    return <Widget Widget={Gtk.Button} {...rest} child={children} />;
+    const [p, rest] = splitProps(props, ["children"]);
+    return useWidget(
+        Gtk.Button,
+        mergeProps(
+            {
+                get child() {
+                    return p.children;
+                },
+            },
+            rest
+        )
+    );
 };
 
 type CheckButtonPropBase<T extends Gtk.CheckButton = Gtk.CheckButton> = {
@@ -88,12 +94,15 @@ type CheckButtonProps<T extends Gtk.CheckButton = Gtk.CheckButton> = (
  */
 export const CheckButton: Component<CheckButtonProps> = (props) => {
     const [p, rest] = splitProps(props, ["children"]);
-    return (
-        <Widget
-            ref={props.ref}
-            Widget={Gtk.CheckButton}
-            {...rest}
-            child={p.children}
-        />
+    return useWidget(
+        Gtk.CheckButton,
+        mergeProps(
+            {
+                get child() {
+                    return p.children;
+                },
+            },
+            rest
+        )
     );
 };
