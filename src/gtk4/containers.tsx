@@ -7,6 +7,7 @@ import {
     JSX,
     children,
     createEffect,
+    createMemo,
     splitProps,
 } from "../index.js";
 import Gtk from "gi://Gtk?version=4.0";
@@ -126,8 +127,10 @@ export const CenterBox: Component<CenterBoxProps> = (props) => {
         ref.set_end_widget(end);
     };
 
+    const elements = createMemo(() => p.children)
+
     createEffect(() => {
-        const children = p.children;
+        const children = elements()
         if (children) {
             switch (children.length) {
                 case 3: {
@@ -185,7 +188,6 @@ export const ScrolledWindow: Component<ScrolledWindowProps> = (props) => {
     return (
         <Widget
             Widget={Gtk.ScrolledWindow}
-            ref={props.ref}
             {...rest}
             child={p.children}
         />
@@ -235,21 +237,26 @@ export const HeaderBar: Component<HeaderBarProps> = (props) => {
     const [p, rest] = splitProps(props, ["start", "end", "ref"]);
     let ref: Gtk.HeaderBar;
     const trackingWidgets: JSX.Element[] = [];
+    
+    const startElements = children(() => p.start)
+    const endElements = children(() => p.end)
 
     createEffect(() => {
         for (const element of trackingWidgets) {
             ref.remove(element);
         }
         trackingWidgets.splice(0, trackingWidgets.length);
-
-        if (p.start)
-            for (const element of p.start) {
+        
+        const starts = startElements.toArray()
+        if (starts)
+            for (const element of starts) {
                 ref.pack_start(element);
                 trackingWidgets.push(element);
             }
 
-        if (p.end)
-            for (const element of p.end) {
+        const ends = endElements.toArray()
+        if (ends)
+            for (const element of ends) {
                 ref.pack_end(element);
                 trackingWidgets.push(element);
             }
