@@ -8,21 +8,27 @@ function resolveChildren(c: any): any {
     return c;
 }
 
-export type ResolvedJSXElement<A> = JSX.Element | A;
-export type ResolvedChildren<A> =
-    | ResolvedJSXElement<A>
-    | ResolvedJSXElement<A>[];
-export type ChildrenResult<A> = Accessor<ResolvedChildren<A>> & {
-    toArray: () => ResolvedJSXElement<A>[];
+export type ResolvedJSXElement = JSX.Element;
+export type ResolvedChildren<T extends ResolvedJSXElement | undefined> =
+    T extends undefined ? T : T | T[];
+export type ChildrenResult<T extends ResolvedJSXElement | undefined> = Accessor<
+    ResolvedChildren<T>
+> & {
+    toArray: () => ResolvedJSXElement[];
+};
+export type ChildrenAccessorResult<T, A extends T[] = T[]> = Accessor<T> & {
+    toArray: () => A;
 };
 
-export function children(
-    fn: Accessor<JSX.Element | JSX.ArrayElement | undefined>
-): ChildrenResult<never>;
+type AnyChildrenResult = Accessor<any> & { toArray: () => any };
+
+export function children<T extends JSX.Element>(
+    fn: Accessor<T | T[] | undefined>
+): ChildrenResult<T>;
 
 export function children<A>(
-    fn: Accessor<Accessor<A> | undefined>
-): ChildrenResult<A | undefined>;
+    fn: Accessor<Accessor<A>>
+): ChildrenAccessorResult<A>;
 
 /**
  * The helper function to consume children.
@@ -63,14 +69,12 @@ export function children<A>(
  * @param fn
  * @returns
  */
-export function children<A>(
-    fn: Accessor<JSX.Element | JSX.ArrayElement | Accessor<A> | undefined>
-): ChildrenResult<JSX.Element | A> {
+export function children(fn: Accessor<any>): any {
     const c = createMemo(fn, undefined, { equals: widgetEquals });
-    const memo = createMemo(() => resolveChildren(c())) as ChildrenResult<A>;
-    memo.toArray = () => {
+    const memo = createMemo(() => resolveChildren(c()));
+    (memo as AnyChildrenResult).toArray = () => {
         const c = memo();
         return Array.isArray(c) ? c : c != null ? [c] : [];
     };
-    return memo;
+    return memo as AnyChildrenResult;
 }
