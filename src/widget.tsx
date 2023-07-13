@@ -10,6 +10,7 @@ import {
     ValidComponent,
     createMemo,
     untrack,
+    createRenderEffect,
 } from "./index.js";
 
 /**
@@ -75,6 +76,8 @@ interface WidgetProps<T extends JSX.Element> {
  * Create Gtk widgets as components.
  *
  * If you need a ref of the widget, consider {@link Widget}.
+ * 
+ * You can just pass received props or the result of `splitProps`, or you will lost reactivity.
  *
  * @param widgetClass the widget constructor
  * @param props properties
@@ -85,7 +88,7 @@ export function useWidget<T extends JSX.Element>(
     props: { ref?: Ref<T>; [key: string]: unknown }
 ): T {
     const node = new widgetClass();
-    spreadProps(node, props);
+    createRenderEffect(() => spreadProps(node, props));
     forwardRef(node, props.ref);
     return node;
 }
