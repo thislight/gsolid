@@ -40,7 +40,7 @@ export {
     mergeProps,
 } from "solid-js";
 
-export {children} from "./reactive.js"
+export {children, start} from "./reactive.js"
 
 export type { Accessor, AccessorArray, Setter } from "solid-js";
 
