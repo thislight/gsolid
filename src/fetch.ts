@@ -352,7 +352,7 @@ export class Client {
     }
 }
 
-export const ClientContext = createContext<Client>();
+export const ClientContext = /* @__PURE__ */ createContext<Client>();
 
 export function useClient() {
     const context = useContext(ClientContext);

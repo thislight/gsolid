@@ -37,7 +37,7 @@ export function renderToWindow(
     return disposeWrap;
 }
 
-export const WindowContext = createContext<Gtk.Window>();
+export const WindowContext = /* @__PURE__ */ createContext<Gtk.Window>();
 
 export function useWindow(): Gtk.Window {
     const window = useContext(WindowContext);
