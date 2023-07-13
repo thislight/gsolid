@@ -97,11 +97,11 @@ export const ReactiveWindow: Component<WindowProps & { open: boolean }> = (
         const currentOpen = ref.is_visible();
         if (currentOpen) {
             if (!p.open) {
-                ref.present();
+                ref.close();
             }
         } else {
             if (p.open) {
-                ref.close();
+                ref.present();
             }
         }
     });
