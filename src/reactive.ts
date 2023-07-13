@@ -8,13 +8,12 @@ function resolveChildren(c: any): any {
     return c;
 }
 
-export type ResolvedJSXElement = JSX.Element;
-export type ResolvedChildren<T extends ResolvedJSXElement | undefined> =
-    T extends undefined ? T : T | T[];
-export type ChildrenResult<T extends ResolvedJSXElement | undefined> = Accessor<
+export type ResolvableJSXElement = JSX.Element | JSX.Element[] | undefined;
+export type ResolvedChildren<T extends ResolvableJSXElement> = T;
+export type ChildrenResult<T extends ResolvableJSXElement> = Accessor<
     ResolvedChildren<T>
 > & {
-    toArray: () => ResolvedJSXElement[];
+    toArray: () => JSX.Element[];
 };
 export type ChildrenAccessorResult<T, A extends T[] = T[]> = Accessor<T> & {
     toArray: () => A;
@@ -22,8 +21,8 @@ export type ChildrenAccessorResult<T, A extends T[] = T[]> = Accessor<T> & {
 
 type AnyChildrenResult = Accessor<any> & { toArray: () => any };
 
-export function children<T extends JSX.Element>(
-    fn: Accessor<T | T[] | undefined>
+export function children<T extends ResolvableJSXElement>(
+    fn: Accessor<T>
 ): ChildrenResult<T>;
 
 export function children<A>(
