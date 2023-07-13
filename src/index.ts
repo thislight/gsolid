@@ -3,7 +3,7 @@
  */
 import type { JSX } from "./jsx-runtime.js";
 export type { JSX } from "./jsx-runtime.js";
-export { render, spread as spreadProps } from "./jsx-runtime.js";
+export { spread as spreadProps } from "./jsx-runtime.js";
 
 // Forward Solid functions
 export {

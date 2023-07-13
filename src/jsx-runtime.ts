@@ -27,7 +27,6 @@ function camelToKecab(str: string) {
 }
 
 export const {
-    render,
     effect,
     memo,
     createComponent,
