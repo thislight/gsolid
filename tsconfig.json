@@ -6,6 +6,7 @@
         "src/fetch.ts",
         "src/web-ponyfill.ts",
         "src/reactive.ts",
+        "src/store.ts",
     ],
     "include" : ["src/gtk4/*.tsx", "src/gtk4/*.ts"],
     "compilerOptions": {

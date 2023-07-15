@@ -8,6 +8,7 @@ const entryPoints = [
     "src/fetch.ts",
     "src/web-ponyfill.ts",
     "src/reactive.ts",
+    "src/store.ts",
 ];
 
 const gtk4JsxEntryPoints = [

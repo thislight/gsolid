@@ -32,6 +32,11 @@
             "import": "./dist/fetch.js",
             "require": "./dist/fetch.cjs"
         },
+        "./store": {
+            "types": "./types/store.d.ts",
+            "import": "./dist/store.js",
+            "require": "./dist/store.cjs"
+        },
         "./web-ponyfill": {
             "types": "./types/web-ponyfill.d.ts",
             "import": "./dist/web-ponyfill.js",
