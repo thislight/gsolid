@@ -8,6 +8,8 @@ Simple and performant reactivity for building user interfaces, with GTK 4. GSoli
 
 GSolid supports [Gjs](https://gitlab.gnome.org/GNOME/gjs/).
 
+Launch your project in seconds with [gsolid-app-starter](https://github.com/thislight/gsolid-app-starter)!
+
 ```jsx
 import Gtk from "gi://Gtk?version=4.0";
 import GLib from "gi://GLib";
