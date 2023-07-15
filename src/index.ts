@@ -12,7 +12,6 @@ export {
     createEffect,
     createMemo,
     createComputed,
-    createContext,
     createReaction,
     createRenderEffect,
     createResource,
@@ -23,7 +22,6 @@ export {
     onCleanup,
     untrack,
     splitProps,
-    useContext,
     startTransition,
     useTransition,
     observable,
@@ -40,9 +38,9 @@ export {
     mergeProps,
 } from "solid-js";
 
-export {children, start} from "./reactive.js"
+export { children, start, createContext, useContext } from "./reactive.js";
 
-export type { Accessor, AccessorArray, Setter } from "solid-js";
+export type { Accessor, AccessorArray, Setter, Owner } from "solid-js";
 
 /**
  * General component type without implicit `children` prop.
