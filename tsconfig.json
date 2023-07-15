@@ -6,9 +6,9 @@
         "src/fetch.ts",
         "src/web-ponyfill.ts",
         "src/reactive.ts",
-        "src/store.ts",
+        "src/store.ts"
     ],
-    "include" : ["src/gtk4/*.tsx", "src/gtk4/*.ts"],
+    "include": ["src/gtk4/*.tsx", "src/gtk4/*.ts"],
     "compilerOptions": {
         "emitDeclarationOnly": true,
         "declaration": true,
@@ -28,12 +28,16 @@
             "ES2020",
             "ES2021",
             "ES2022",
-            "ESNext",
-            "DOM",
+            "ESNext"
         ],
-        "types": ["@girs/gjs", "@girs/gtk-4.0", "@girs/soup-3.0"],
+        "types": [
+            "@girs/gjs",
+            "@girs/gtk-4.0",
+            "@girs/soup-3.0",
+            "@girs/gjs/dom"
+        ],
         "jsxImportSource": "gsolid",
         "esModuleInterop": true,
-        "rootDir": "./src",
-    },
+        "rootDir": "./src"
+    }
 }
