@@ -14,7 +14,8 @@
         "declaration": true,
         "target": "esnext",
         "newLine": "LF",
-        "module": "Node16",
+        "module": "ES2022",
+        "moduleResolution": "Bundler",
         "strict": true,
         "jsx": "preserve",
         "outDir": "types",
@@ -28,13 +29,13 @@
             "ES2020",
             "ES2021",
             "ES2022",
-            "ESNext"
+            "ESNext",
+            "DOM", // This type lib is required to build, part of solid-js includes links to dom.d.ts
         ],
         "types": [
             "@girs/gjs",
             "@girs/gtk-4.0",
-            "@girs/soup-3.0",
-            "@girs/gjs/dom"
+            "@girs/soup-3.0"
         ],
         "jsxImportSource": "gsolid",
         "esModuleInterop": true,
