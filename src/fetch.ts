@@ -255,7 +255,7 @@ export class Response {
     async text() {
         const buffer = await this.arrayBuffer();
         const charset = this.headers.get_one("Charset") ?? undefined;
-        const decoder = new TextDecoder(charset as TextDecoderEncoding);
+        const decoder = new TextDecoder(charset as TextDecoderEncoding | undefined);
         return decoder.decode(new Uint8Array(buffer));
     }
 
