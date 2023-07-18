@@ -233,3 +233,20 @@ export function useContext<T>(context: Context<T>): T {
         ? ctx
         : context.defaultValue;
 }
+
+/**
+ * Apply `value` as `context` on `scope`.
+ */
+export function applyContext<T, R>(
+    context: Context<T>,
+    value: T,
+    scope: Accessor<R>
+): Accessor<R> {
+    return createMemo(() => {
+        untrack(() => {
+            const owner = getOwner();
+            owner!.context = { [context.id]: value };
+        })
+        return scope();
+    });
+}
