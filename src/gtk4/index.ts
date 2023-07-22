@@ -5,6 +5,7 @@ import Gtk from "gi://Gtk?version=4.0";
 import Gio from "gi://Gio?version=2.0";
 import GObject from "gi://GObject?version=2.0";
 import { start, createContext, useContext, applyContext } from "../reactive.js";
+import { SessionStorage } from "../storage.js";
 import { disconnectOnCleanup, registeredGClass } from "../gobject.js";
 import { Accessor, createMemo, onMount } from "../index.js";
 import { useWindow } from "./windows.jsx";
@@ -36,6 +37,16 @@ interface GtkApplicationConfig {
     flags?: Gio.ApplicationFlags;
 }
 
+@registeredGClass({})
+export class GSolidApplication extends Gtk.Application {
+    sessionStorage: SessionStorage;
+
+    constructor(config?: Gtk.Application.ConstructorProperties) {
+        super(config);
+        this.sessionStorage = new SessionStorage();
+    }
+}
+
 /**
  * Wrap application in a Gtk.Application.
  *
@@ -45,11 +56,11 @@ interface GtkApplicationConfig {
  */
 export function wrapApp(
     config: GtkApplicationConfig,
-    code: (app: Gtk.Application) => void
-): typeof Gtk.Application {
+    code: (app: GSolidApplication) => void
+): typeof GSolidApplication {
     return GObject.registerClass(
-        class extends Gtk.Application {
-            disposer: (() => void) | undefined;
+        class extends GSolidApplication {
+            private disposer: (() => void) | undefined;
 
             constructor() {
                 super({

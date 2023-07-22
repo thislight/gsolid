@@ -7,6 +7,7 @@
         "src/web-ponyfill.ts",
         "src/reactive.ts",
         "src/store.ts",
+        "src/storage.ts",
         "src/gobject.ts",
     ],
     "include": ["src/gtk4/*.tsx", "src/gtk4/*.ts"],

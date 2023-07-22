@@ -9,6 +9,7 @@ const entryPoints = [
     "src/web-ponyfill.ts",
     "src/reactive.ts",
     "src/store.ts",
+    "src/storage.ts",
     "src/gobject.ts",
 ];
 
