@@ -6,7 +6,8 @@
         "src/fetch.ts",
         "src/web-ponyfill.ts",
         "src/reactive.ts",
-        "src/store.ts"
+        "src/store.ts",
+        "src/gobject.ts",
     ],
     "include": ["src/gtk4/*.tsx", "src/gtk4/*.ts"],
     "compilerOptions": {
@@ -20,6 +21,7 @@
         "jsx": "preserve",
         "outDir": "types",
         "isolatedModules": true,
+        "experimentalDecorators": true,
         "lib": [
             "ES2015",
             "ES2016",

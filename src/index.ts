@@ -40,6 +40,8 @@ export {
 
 export { children, start, createContext, useContext } from "./reactive.js";
 
+export {disconnectOnCleanup} from "./gobject.js";
+
 export type { Accessor, AccessorArray, Setter, Owner } from "solid-js";
 
 /**

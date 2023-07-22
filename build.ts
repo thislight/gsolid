@@ -9,6 +9,7 @@ const entryPoints = [
     "src/web-ponyfill.ts",
     "src/reactive.ts",
     "src/store.ts",
+    "src/gobject.ts",
 ];
 
 const gtk4JsxEntryPoints = [
