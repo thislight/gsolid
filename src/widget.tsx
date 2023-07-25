@@ -1,5 +1,6 @@
 /**
- * SPDX: Apache-2.0
+ * @license Apache-2.0
+ * @module
  */
 import {
     Ref,
@@ -66,7 +67,7 @@ export function forwardRef<T>(ref: T, forwardTo?: Ref<T>): T {
     return ref
 }
 
-interface WidgetProps<T extends JSX.Element> {
+export interface WidgetProps<T extends JSX.Element> {
     ref?: Ref<T>;
     Widget: new () => T;
     [key: string]: unknown;

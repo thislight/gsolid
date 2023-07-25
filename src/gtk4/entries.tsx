@@ -1,5 +1,6 @@
 /**
- * SPDX: Apache-2.0
+ * @license Apache-2.0
+ * @module
  */
 import Gtk from "gi://Gtk?version=4.0";
 import type Pango from "gi://Pango?version=1.0";
@@ -14,7 +15,7 @@ import {
 import { Component } from "../index.js";
 import { Widget, useWidget } from "../widget.jsx";
 
-type EntryProps<T extends Gtk.Entry = Gtk.Entry> = {
+export type EntryProps<T extends Gtk.Entry = Gtk.Entry> = {
     activatesDefault?: boolean;
     attributes?: Pango.AttrList;
     buffer?: Gtk.EntryBuffer;
@@ -52,29 +53,65 @@ type EntryProps<T extends Gtk.Entry = Gtk.Entry> = {
     visibility?: boolean;
 
     // Signals
+    /**
+     * 
+     * @param self 
+     * @returns 
+     * @event
+     */
     onActivate?: (self: T) => void;
+    /**
+     * 
+     * @param self 
+     * @param iconPos 
+     * @returns 
+     * @event
+     */
     onIconPress?: (self: T, iconPos: Gtk.EntryIconPosition) => void;
+    /**
+     * 
+     * @param self 
+     * @param iconPos 
+     * @returns 
+     * @event
+     */
     onIconRelease?: (self: T, iconPos: Gtk.EntryIconPosition) => void;
 } & GtkWidgetProps<T> &
     GtkAccessibleProps &
     GtkEditableProps<T>;
 
+/**
+ * 
+ * @param props 
+ * @returns 
+ * @group Components
+ */
 export const Entry: Component<EntryProps> = (props) => {
     return <Widget Widget={Gtk.Entry} {...props} />;
 };
 
-type PasswordEntryProps<T extends Gtk.PasswordEntry = Gtk.PasswordEntry> = {
+export type PasswordEntryProps<T extends Gtk.PasswordEntry = Gtk.PasswordEntry> = {
     activatesDefault?: boolean;
     extraMenu?: Gio.MenuModel;
     placeholderText?: string;
     showPeekIcon?: boolean;
 
     // Signals
+    /**
+     * 
+     * @param self 
+     * @returns 
+     * @event
+     */
     onActivate?: (self: T) => void;
 } & GtkWidgetProps<T> &
     GtkAccessibleProps &
     GtkEditableProps<T> & RefAble<T>;
 
+/**
+ * 
+ * @group Components
+ */
 export const PasswordEntry: Component<PasswordEntryProps> = (props) => {
     return useWidget(Gtk.PasswordEntry, props as unknown as Record<string, unknown>);
 };

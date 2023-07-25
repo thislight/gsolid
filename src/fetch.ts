@@ -4,16 +4,23 @@
  * This library trys to recreate the Web Fetch API in gjs, but 1:1 simulation is not the goal.
  * The main goal is improve the UX for libsoup.
  * 
- * SPDX: Apache-2.0
+ * The key difference is, while Web `fetch` is a global function to be used anywhere,
+ * this module exposed {@link Client.fetch} as the main function to be used.
+ * 
+ * Additionally, you can use {@link fetch} as the {@link ClientContext} is set.
+ * 
+ * @license Apache-2.0
+ * 
+ * @module
  */
 import Soup from "gi://Soup?version=3.0";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import { createContext, useContext } from "./index.js";
 
-type RequestCacheType = "default" | "reload" | "no-cache";
+export type RequestCacheType = "default" | "reload" | "no-cache";
 
-type Body =
+export type Body =
     | Gio.InputStream
     | null
     | ArrayBuffer
@@ -23,12 +30,12 @@ type Body =
     | string
     | undefined;
 
-type AnyHeaders =
+export type AnyHeaders =
     | Soup.MessageHeaders
     | Record<string, string>
     | [string, string][];
 
-type RequestOptions = {
+export type RequestOptions = {
     readonly body?: Body;
     readonly cache?: RequestCacheType;
     readonly headers?:
@@ -157,7 +164,7 @@ export class Request {
     }
 }
 
-type ResponseOpts = {
+export type ResponseOpts = {
     status?: number;
     statusText?: string;
     headers?: AnyHeaders;

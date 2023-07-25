@@ -1,0 +1,21 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": [
+        "src/index.ts",
+        "src/jsx-runtime.ts",
+        "src/widget.tsx",
+        "src/gtk4/",
+        "src/fetch.ts",
+        "src/store.ts",
+        "src/web-ponyfill.ts",
+        "src/storage.ts"
+    ],
+    "out": "./docs-dist",
+    "includeVersion": true,
+    "visibilityFilters": {
+        "protected": false,
+        "private": false,
+        "inherited": true,
+        "external": true
+    }
+}

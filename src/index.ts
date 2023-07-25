@@ -1,5 +1,6 @@
 /**
- * SPDX: Apache-2.0
+ * @license Apache-2.0
+ * @module
  */
 import type { JSX } from "./jsx-runtime.js";
 export type { JSX } from "./jsx-runtime.js";
@@ -38,9 +39,25 @@ export {
     mergeProps,
 } from "solid-js";
 
-export { children, start, createContext, useContext } from "./reactive.js";
+export {
+    children,
+    start,
+    createContext,
+    useContext,
+    applyContext,
+} from "./reactive.js";
 
-export {disconnectOnCleanup} from "./gobject.js";
+export type {
+    Context,
+    EffectOptions,
+    ChildrenAccessorResult,
+    ChildrenResult,
+    ContextProviderComponent,
+    ResolvableJSXElement,
+    ResolvedChildren,
+} from "./reactive.js";
+
+export { disconnectOnCleanup } from "./gobject.js";
 
 export type { Accessor, AccessorArray, Setter, Owner } from "solid-js";
 

@@ -1,13 +1,26 @@
 /**
- * SPDX: Apache-2.0
+ * @license Apache-2.0
+ * @module
  */
 import { useWidget } from "../widget.jsx";
 import { Component, JSX, mergeProps, splitProps } from "../index.js";
 import Gtk from "gi://Gtk?version=4.0";
 import { GtkWidgetProps, GtkAccessibleProps, RefAble } from "./common.js";
 
-type ButtonPropBase = {
+export type ButtonPropBase = {
+    /**
+     * 
+     * @param e 
+     * @returns 
+     * @event
+     */
     onClicked?: (e: Gtk.Button) => void;
+    /**
+     * 
+     * @param e 
+     * @returns 
+     * @event
+     */
     onActivate?: (e: Gtk.Button) => void;
     iconName?: string;
     hasFrame?: string;
@@ -17,12 +30,16 @@ type ButtonPropBase = {
     GtkAccessibleProps &
     RefAble<Gtk.Button>;
 
-type ButtonProps = (
+export type ButtonProps = (
     | { label?: string; children?: undefined }
     | { children?: JSX.Element; label?: undefined }
 ) &
     ButtonPropBase;
 
+/**
+ *
+ * @group Components
+ */
 export const Button: Component<ButtonProps> = (props) => {
     const [p, rest] = splitProps(props, ["children"]);
     return useWidget(
@@ -38,19 +55,31 @@ export const Button: Component<ButtonProps> = (props) => {
     );
 };
 
-type CheckButtonPropBase<T extends Gtk.CheckButton = Gtk.CheckButton> = {
+export type CheckButtonPropBase<T extends Gtk.CheckButton = Gtk.CheckButton> = {
     active?: boolean;
     group?: T;
     inconsistent?: boolean;
     useUnderline?: boolean;
     // Signals
+    /**
+     * 
+     * @param e 
+     * @returns 
+     * @event
+     */
     onActivate?: (e: T) => void;
+    /**
+     * 
+     * @param e 
+     * @returns 
+     * @event
+     */
     onToggled?: (e: T) => void;
 } & GtkWidgetProps<T> &
     GtkAccessibleProps &
     RefAble<T>;
 
-type CheckButtonProps<T extends Gtk.CheckButton = Gtk.CheckButton> = (
+export type CheckButtonProps<T extends Gtk.CheckButton = Gtk.CheckButton> = (
     | { children?: JSX.Element; label?: undefined }
     | { label?: string; children?: undefined }
 ) &
@@ -91,6 +120,7 @@ type CheckButtonProps<T extends Gtk.CheckButton = Gtk.CheckButton> = (
  * <CheckButton group={ref} label="Check 2" />
  * <CheckButton group={ref} label="Check 3" />
  * ````
+ * @group Components
  */
 export const CheckButton: Component<CheckButtonProps> = (props) => {
     const [p, rest] = splitProps(props, ["children"]);

@@ -3,7 +3,8 @@
  * 
  * This module injects into solid js by a bundler, and is not intended to be used by user code.
  * 
- * SPDX: Apache-2.0
+ * @license Apache-2.0
+ * @module
  */
 import GLib from "gi://GLib";
 

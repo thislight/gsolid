@@ -1,5 +1,6 @@
 /**
- * SPDX: Apache-2.0
+ * @license Apache-2.0
+ * @module
  */
 
 import Gtk from "gi://Gtk?version=4.0";
@@ -22,6 +23,12 @@ import { createStore } from "solid-js/store";
 
 export const WindowContext = /* @__PURE__ */ createContext<Gtk.Window>();
 
+/**
+ * Get nearset {@link WindowContext} value on tree.
+ * 
+ * @throws ReferenceError if {@link WindowContext} is unset
+ * @returns value from {@link WindowContext}
+ */
 export function useWindow(): Gtk.Window {
     const window = useContext(WindowContext);
     if (!window) {
@@ -30,7 +37,7 @@ export function useWindow(): Gtk.Window {
     return window;
 }
 
-type WindowProps<T extends Gtk.Window = Gtk.Window> = {
+export type WindowProps<T extends Gtk.Window = Gtk.Window> = {
     application?: Gtk.Application;
     decorated?: boolean;
     defaultHeight?: number;
@@ -54,9 +61,30 @@ type WindowProps<T extends Gtk.Window = Gtk.Window> = {
     children?: JSX.Element;
 
     // Signals
+    /**
+     * 
+     * @param self 
+     * @returns 
+     * @event
+     */
     onActivateDefaullt?: (self: T) => void;
+    /**
+     * 
+     * @param self 
+     * @returns 
+     * @event
+     */
     onActivateFocus?: (self: T) => void;
+    /**
+     * 
+     * @param self 
+     * @returns 
+     * @event
+     */
     onCloseRequest?: (self: T) => boolean;
+    /**
+     * @event
+     */
     onEnableDebugging?: (self: T, toggle: boolean) => boolean;
 } & GtkWidgetProps<T> &
     GtkAccessibleProps &
@@ -66,6 +94,7 @@ type WindowProps<T extends Gtk.Window = Gtk.Window> = {
  * Window as a component.
  *
  * This component sets `WindowContext`.
+ * @group Components
  */
 export const Window: Component<WindowProps> = (props) => {
     const [p, rest] = splitProps(props, ["children"]);
@@ -108,6 +137,7 @@ export const Window: Component<WindowProps> = (props) => {
  *
  * <ReactiveWindow open={isOpen()} onCloseRequest={() => setIsOpen(x => !x)} />
  * ````
+ * @group Components
  */
 export const ReactiveWindow: Component<WindowProps & { open: boolean }> = (
     props
@@ -171,7 +201,7 @@ export interface WindowGeometry {
 /**
  * Get reactive object about current window's size and scale factor.
  *
- * `WindowContext` must be set on the tree, or `ReferenceError` will be thrown.
+ * @throws ReferenceError if {@link WindowContext} is unset.
  */
 export function useWindowSize(): WindowGeometry {
     const window = useWindow();

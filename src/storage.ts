@@ -1,11 +1,15 @@
+/**
+ * @license Apache-2.0
+ * @module
+ */
 import GObject from "gi://GObject?version=2.0";
 import { registeredGClass } from "./gobject";
 
-interface StorageEventMap {
+export interface StorageEventMap {
     storage: (event: StorageEvent) => void;
 }
 
-interface StorageEvent {
+export interface StorageEvent {
     readonly key: string | null;
     readonly newValue: string | null;
     readonly oldValue: string | null;
@@ -27,39 +31,43 @@ export interface Storage {
     disconnect(id: number): void;
 }
 
-const StorageEvent = /* @__PURE__ */ GObject.registerClass(
-    class StorageEvent extends GObject.Object implements StorageEvent {
-        key: string | null;
-        newValue: string | null;
-        oldValue: string | null;
-        storageArea: Storage;
+@registeredGClass({})
+export class GStorageEvent extends GObject.Object implements StorageEvent {
+    readonly key: string | null;
+    readonly newValue: string | null;
+    readonly oldValue: string | null;
+    readonly storageArea: Storage;
 
-        constructor(
-            key: string | null,
-            nval: string | null,
-            oval: string | null,
-            area: Storage
-        ) {
-            super();
-            this.key = key;
-            this.newValue = nval;
-            this.oldValue = oval;
-            this.storageArea = area;
-        }
+    constructor({
+        key,
+        nval,
+        oval,
+        area,
+    }: {
+        key: string | null;
+        nval: string | null;
+        oval: string | null;
+        area: Storage;
+    }) {
+        super();
+        this.key = key;
+        this.newValue = nval;
+        this.oldValue = oval;
+        this.storageArea = area;
     }
-);
+}
 
 @registeredGClass({
     Signals: {
         storage: {
-            param_types: [StorageEvent.$gtype],
+            param_types: [GStorageEvent.$gtype],
             return_value: GObject.TYPE_NONE,
         },
     },
 })
 export class SessionStorage extends GObject.Object implements Storage {
-    dict: Map<string, string>;
-    allKeys: string[];
+    private dict: Map<string, string>;
+    private allKeys: string[];
 
     constructor() {
         super();
@@ -106,11 +114,11 @@ export class SessionStorage extends GObject.Object implements Storage {
         return this.dict.size;
     }
 
-    emitStorageEvent(
+    private emitStorageEvent(
         k: string | null,
         nval: string | null,
         oval: string | null
     ) {
-        this.emit("storage", new StorageEvent(k, nval, oval, this));
+        this.emit("storage", new GStorageEvent({key: k, nval, oval, area: this}));
     }
 }

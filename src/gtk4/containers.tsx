@@ -1,5 +1,6 @@
 /**
- * SPDX: Apache-2.0
+ * @license Apache-2.0
+ * @module
  */
 import { Widget, forwardRef } from "../widget.jsx";
 import {
@@ -19,7 +20,7 @@ import {
     RefAble,
 } from "./common.js";
 
-type BoxProps<T extends Gtk.Box = Gtk.Box> = {
+export type BoxProps<T extends Gtk.Box = Gtk.Box> = {
     /**
      * The amount of space between children.
      */
@@ -43,6 +44,8 @@ type BoxProps<T extends Gtk.Box = Gtk.Box> = {
 
 /**
  * The {@link Gtk.Box} widget arranges child widgets into a single row or column.
+ *
+ * @group Components
  */
 export const Box: Component<BoxProps> = (props) => {
     const [p, rest] = splitProps(props, ["children", "ref"]);
@@ -71,7 +74,7 @@ export const Box: Component<BoxProps> = (props) => {
     );
 };
 
-type CenterBoxPropBase<T extends Gtk.CenterBox = Gtk.CenterBox> = {
+export type CenterBoxPropBase<T extends Gtk.CenterBox = Gtk.CenterBox> = {
     baselinePosition?: Gtk.BaselinePosition;
     // shrinkCenterLast?: boolean
 } & GtkWidgetProps<T> &
@@ -79,7 +82,7 @@ type CenterBoxPropBase<T extends Gtk.CenterBox = Gtk.CenterBox> = {
     GtkOrientableProps &
     RefAble<T>;
 
-type CenterBoxProps<T extends Gtk.CenterBox = Gtk.CenterBox> = (
+export type CenterBoxProps<T extends Gtk.CenterBox = Gtk.CenterBox> = (
     | {
           startWidget?: JSX.Element;
           centerWidget?: JSX.Element;
@@ -112,6 +115,7 @@ type CenterBoxProps<T extends Gtk.CenterBox = Gtk.CenterBox> = (
  * Slots also accept `null`, `null` will reset corresponding child.
  *
  * @since Gtk 4.10
+ * @group Components
  */
 export const CenterBox: Component<CenterBoxProps> = (props) => {
     let ref: Gtk.CenterBox;
@@ -127,10 +131,10 @@ export const CenterBox: Component<CenterBoxProps> = (props) => {
         ref.set_end_widget(end);
     };
 
-    const elements = createMemo(() => p.children)
+    const elements = createMemo(() => p.children);
 
     createEffect(() => {
-        const children = elements()
+        const children = elements();
         if (children) {
             switch (children.length) {
                 case 3: {
@@ -165,7 +169,9 @@ export const CenterBox: Component<CenterBoxProps> = (props) => {
     );
 };
 
-type ScrolledWindowProps<T extends Gtk.ScrolledWindow = Gtk.ScrolledWindow> = {
+export type ScrolledWindowProps<
+    T extends Gtk.ScrolledWindow = Gtk.ScrolledWindow
+> = {
     hasFrame?: boolean;
     kineticScrolling?: boolean;
     maxContentHeight?: number;
@@ -182,19 +188,19 @@ type ScrolledWindowProps<T extends Gtk.ScrolledWindow = Gtk.ScrolledWindow> = {
     GtkScrollableProps &
     RefAble<T>;
 
+/**
+ * `ScrolledWindow` is a container that makes its child scrollable.
+ *
+ * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.scrolledwindow
+ * @group Components
+ */
 export const ScrolledWindow: Component<ScrolledWindowProps> = (props) => {
     const [p, rest] = splitProps(props, ["children"]);
 
-    return (
-        <Widget
-            Widget={Gtk.ScrolledWindow}
-            {...rest}
-            child={p.children}
-        />
-    );
+    return <Widget Widget={Gtk.ScrolledWindow} {...rest} child={p.children} />;
 };
 
-type ListViewProps<T extends Gtk.ListView = Gtk.ListView> = {
+export type ListViewProps<T extends Gtk.ListView = Gtk.ListView> = {
     enableRubberband?: boolean;
     factory: Gtk.ListItemFactory;
     /**
@@ -207,6 +213,13 @@ type ListViewProps<T extends Gtk.ListView = Gtk.ListView> = {
     // tabBehavior
 
     // Signals
+    /**
+     * 
+     * @param self 
+     * @param position 
+     * @returns 
+     * @event
+     */
     onActivate: (self: T, position: number) => void;
 } & GtkWidgetProps<T> &
     GtkAccessibleProps &
@@ -218,12 +231,13 @@ type ListViewProps<T extends Gtk.ListView = Gtk.ListView> = {
  * ListView presents a large dynamic list of items.
  *
  * {@link Box} is recommended for small amount of items.
+ * @group Components
  */
 export const ListView: Component<ListViewProps> = (props) => {
     return <Widget Widget={Gtk.ListView} ref={props.ref} {...props} />;
 };
 
-type HeaderBarProps<T extends Gtk.HeaderBar = Gtk.HeaderBar> = {
+export type HeaderBarProps<T extends Gtk.HeaderBar = Gtk.HeaderBar> = {
     decorationLayout?: string;
     showTitleButtons?: boolean;
     titleWidget?: Gtk.Widget;
@@ -233,28 +247,32 @@ type HeaderBarProps<T extends Gtk.HeaderBar = Gtk.HeaderBar> = {
     GtkAccessibleProps &
     RefAble<T>;
 
+/**
+ *
+ * @group Components
+ */
 export const HeaderBar: Component<HeaderBarProps> = (props) => {
     const [p, rest] = splitProps(props, ["start", "end", "ref"]);
     let ref: Gtk.HeaderBar;
     const trackingWidgets: JSX.Element[] = [];
-    
-    const startElements = children(() => p.start)
-    const endElements = children(() => p.end)
+
+    const startElements = children(() => p.start);
+    const endElements = children(() => p.end);
 
     createEffect(() => {
         for (const element of trackingWidgets) {
             ref.remove(element);
         }
         trackingWidgets.splice(0, trackingWidgets.length);
-        
-        const starts = startElements.toArray()
+
+        const starts = startElements.toArray();
         if (starts)
             for (const element of starts) {
                 ref.pack_start(element);
                 trackingWidgets.push(element);
             }
 
-        const ends = endElements.toArray()
+        const ends = endElements.toArray();
         if (ends)
             for (const element of ends) {
                 ref.pack_end(element);

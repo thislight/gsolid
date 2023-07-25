@@ -1,5 +1,10 @@
 /**
- * SPDX: Apache-2.0
+ * @license Apache-2.0
+ * 
+ * This module is the JSX runtime to be imported as transpiler translating JSX syntax.
+ * 
+ * Normally It's not meant to be used by users.
+ * @module
  */
 import { createRenderer } from "solid-js/universal";
 import Gtk from "gi://Gtk?version=4.0";

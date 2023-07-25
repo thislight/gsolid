@@ -1,5 +1,6 @@
 /**
- * SPDX: Apache-2.0
+ * @license Apache-2.0
+ * @module
  */
 import Gtk from "gi://Gtk?version=4.0";
 import Gio from "gi://Gio?version=2.0";
@@ -10,6 +11,8 @@ import { disconnectOnCleanup, registeredGClass } from "../gobject.js";
 import { Accessor, createMemo, onMount } from "../index.js";
 import { useWindow } from "./windows.jsx";
 import { createStore } from "../store.js";
+
+export type * from "./common.js";
 
 export * from "./buttons.jsx";
 
@@ -24,6 +27,12 @@ export * from "./windows.jsx";
 export const ApplicationContext =
     /* @__PURE__ */ createContext<Gtk.Application>();
 
+/**
+ * Get nearest {@link Gtk.Application} on tree.
+ * 
+ * @throws ReferenceError if {@link ApplicationContext} is set
+ * @returns value from {@link ApplicationContext}
+ */
 export function useApplication(): Gtk.Application {
     const app = useContext(ApplicationContext);
     if (!app) {
@@ -32,13 +41,22 @@ export function useApplication(): Gtk.Application {
     return app;
 }
 
-interface GtkApplicationConfig {
+export interface GtkApplicationConfig {
     applicationId: string;
     flags?: Gio.ApplicationFlags;
 }
 
+/**
+ * Custom {@link Gtk.Application} for GSolid applications.
+ * 
+ * This class likes `window` or `document` for Web,
+ * keeps multiple API entries for the application.
+ */
 @registeredGClass({})
 export class GSolidApplication extends Gtk.Application {
+    /**
+     * The session storage. The data in this storage is only available during the application running.
+     */
     sessionStorage: SessionStorage;
 
     constructor(config?: Gtk.Application.ConstructorProperties) {
@@ -48,7 +66,7 @@ export class GSolidApplication extends Gtk.Application {
 }
 
 /**
- * Wrap application in a Gtk.Application.
+ * Wrap application in a {@link Gtk.Application}.
  *
  * @param config
  * @param code the code will be executed in "activate" and reactive context.
@@ -99,8 +117,17 @@ export function wrapApp(
 }
 
 export interface MediaQueryData {
+    /**
+     * The acutal height of the current window.
+     */
     readonly height: number;
+    /**
+     * The actual width of the current window.
+     */
     readonly width: number;
+    /**
+     * The color scheme user prefers. `null` when failed to detect one.
+     */
     readonly prefersColorScheme: "dark" | "light" | null;
 }
 
@@ -116,8 +143,19 @@ function getPerferredColorScheme(settings: Gtk.Settings) {
     }
 }
 
+/**
+ * Get reactive infomation about the nearest window on tree and user preferences.
+ * 
+ * @returns the media query data
+ */
 export function useMediaQuery(): MediaQueryData;
 
+/**
+ * Get reactive infomation about the nearest window on tree and user preferences.
+ * 
+ * @param filter return filtered data if specified
+ * @returns the data transformed by the filter
+ */
 export function useMediaQuery<R>(filter: (q: MediaQueryData) => R): Accessor<R>;
 
 export function useMediaQuery<R>(filter?: (q: MediaQueryData) => R): MediaQueryData | Accessor<R> {

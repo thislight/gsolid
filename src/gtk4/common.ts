@@ -1,5 +1,6 @@
 /**
- * SPDX: Apache-2.0
+ * @license Apache-2.0
+ * @module
  */
 import {
     Ref,
@@ -82,15 +83,45 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
     tooltipText?: string;
 
     // Signals
+    /**
+     * Emitted when the widget is going to be destoried.
+     * @param e 
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-destroy
+     */
     onDestory?: (e: T) => void;
+    /**
+     * Emitted when the text direction is changed.
+     * @param e 
+     * @param previousDirection 
+     * @returns 
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-direction-changed
+     */
     onDirectionChanged?: (e: T, previousDirection: Gtk.TextDirection) => void;
+    /**
+     * 
+     * @param e 
+     * @returns 
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-hide
+     */
     onHide?: (e: T) => void;
     /**
      * Emitted if keyboard navigation fails.
      * @returns TRUE if stopping keyboard navigation is fine,
      * FALSE if the emitting widget should try to handle the keyboard navigation attempt in its parent widget(s).
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-keynav-failed
      */
     onKeynavFailed?: (e: T, direction: Gtk.DirectionType) => boolean;
+    /**
+     * Emitted when the widget is going to be mapped.
+     * @param e 
+     * @returns 
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-map
+     */
     onMap?: (e: T) => void;
     /**
      * Emitted when a widget is activated via a mnemonic.
@@ -99,8 +130,18 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param groupCycling TRUE if there are other widgets with the same mnemonic.
      * @returns TRUE to stop other handlers from being invoked for the event.
      * FALSE to propagate the event further.
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-mnemonic-activate
      */
     onMnemonicActivate?: (e: T, groupCycling: boolean) => void;
+    /**
+     * Emitted when focus is moved.
+     * @param e 
+     * @param direction 
+     * @returns 
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-move-focus
+     */
     onMoveFocus?: (e: T, direction: Gtk.DirectionType) => void;
     /**
      * Emitted when the widget’s tooltip is about to be shown.
@@ -113,6 +154,8 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param keyboardMode TRUE if the tooltip was triggered using the keyboard.
      * @param tooltip The data is owned by the caller of the function.
      * @returns TRUE if tooltip should be shown right now, FALSE otherwise.
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-query-tooltip
      */
     onQueryTooltip?: (
         e: T,
@@ -121,10 +164,46 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
         keyboardMode: boolean,
         tooltip: Gtk.Tooltip
     ) => boolean;
+    /**
+     * 
+     * @param e 
+     * @returns
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-realize
+     */
     onRealize?: (e: T) => void;
+    /**
+     * 
+     * @param e 
+     * @returns 
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-show
+     */
     onShow?: (e: T) => void;
+    /**
+     * 
+     * @param e 
+     * @param flags 
+     * @returns 
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-state-flags-changed
+     */
     onStateFlagsChanged?: (e: T, flags: Gtk.StateFlags) => void;
+    /**
+     * 
+     * @param e 
+     * @returns 
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-unmap
+     */
     onUnmap?: (e: T) => void;
+    /**
+     * 
+     * @param e 
+     * @returns 
+     * @event
+     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-unrealize
+     */
     onUnrealize?: (e: T) => void;
 }
 
@@ -159,6 +238,7 @@ export interface GtkEditableProps<T extends Gtk.Widget> {
     // Signals
     /**
      * Emitted at the end of a single user-visible operation on the contents.
+     * @event
      */
     onChanged?: (self: T) => void;
     /**
@@ -168,6 +248,7 @@ export interface GtkEditableProps<T extends Gtk.Widget> {
      * so by connecting to this signal and then stopping the signal with g_signal_stop_emission(),
      * it is possible to modify the range of deleted text,
      * or prevent it from being deleted entirely.
+     * @event
      */
     onDeleteText?: (self: T, startPos: number, endPos: number) => void;
     /**
@@ -179,6 +260,7 @@ export interface GtkEditableProps<T extends Gtk.Widget> {
      * to modify the inserted text, or prevent it from being inserted entirely.
      *
      * @returns the position, in characters, at which to insert the new text. this is an in-out parameter. After the signal emission is finished, it should point after the newly inserted text.
+     * @event
      */
     onInsertText?: (self: T, text: string, length: number) => number;
 }
