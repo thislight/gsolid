@@ -52,15 +52,18 @@ function resolveChildren(c: any): any {
     if (typeof c === "function" && !c.length) {
         return resolveChildren((c as Function)());
     }
+    if (Array.isArray(c)) {
+        return c.flatMap(resolveChildren)
+    }
     return c;
 }
 
-export type ResolvableJSXElement = JSX.Element | JSX.Element[] | undefined;
-export type ResolvedChildren<T extends ResolvableJSXElement> = T;
+export type ResolvableJSXElement = JSX.Element;
+export type ResolvedChildren<T extends ResolvableJSXElement> = T extends any[] ? never : T;
 export type ChildrenResult<T extends ResolvableJSXElement> = Accessor<
     ResolvedChildren<T>
 > & {
-    toArray: () => JSX.Element[];
+    toArray: () => ResolvedChildren<T>[];
 };
 export type ChildrenAccessorResult<T, A extends T[] = T[]> = Accessor<T> & {
     toArray: () => A;
@@ -109,8 +112,6 @@ export function children<A>(
  *
  * `children` is a such `createMemo` with additions.
  * It compares old and new values with widget-specifc algorithm, so it's able to handle element array.
- *
- * Unlike `children` in solid js, GSolid's `chilren` won't flat the array.
  *
  * @param fn
  * @returns
