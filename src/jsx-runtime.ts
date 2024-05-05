@@ -12,7 +12,7 @@ import GObject from "gi://GObject";
 import type { Accessor, Component } from "./index.js";
 
 export declare namespace JSX {
-    type Element = Gtk.Widget;
+    type Element = Gtk.Widget | Gtk.Widget[] | undefined | null;
     type ArrayElement = Element[];
     type ElementType = Element | ArrayElement | Component<any> | Accessor<Element>
 

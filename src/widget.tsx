@@ -36,7 +36,7 @@ import {
  *  return <Widget Widget={Gtk.Widget} ref={ref!} />
  * }
  * ````
- * 
+ *
  * Don't:
  * ````jsx
  * const Foo = (props) => {
@@ -45,9 +45,9 @@ import {
  *  return <Widget Widget={Gtk.Widget} ref={ref!} />
  * }
  * ````
- * 
+ *
  * onMount's callback is run after the render phase. It won't work as intended.
- * 
+ *
  * Instead:
  * ````jsx
  * const Foo = (props) => {
@@ -64,7 +64,7 @@ export function forwardRef<T>(ref: T, forwardTo?: Ref<T>): T {
         // the ref passing in component is always a function
         (forwardTo as (ref: T) => void)(ref);
     }
-    return ref
+    return ref;
 }
 
 export interface WidgetProps<T extends JSX.Element> {
@@ -77,7 +77,7 @@ export interface WidgetProps<T extends JSX.Element> {
  * Create Gtk widgets as components.
  *
  * If you need a ref of the widget, consider {@link Widget}.
- * 
+ *
  * You can just pass received props or the result of `splitProps`, or you will lost reactivity.
  *
  * @param widgetClass the widget constructor

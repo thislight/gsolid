@@ -9,6 +9,7 @@ import {
     children,
     createEffect,
     createMemo,
+    createRenderEffect,
     splitProps,
 } from "../index.js";
 import Gtk from "gi://Gtk?version=4.0";
@@ -19,6 +20,7 @@ import {
     GtkWidgetProps,
     RefAble,
 } from "./common.js";
+import { render } from "./index.js";
 
 export type BoxProps<T extends Gtk.Box = Gtk.Box> = {
     /**
@@ -36,7 +38,7 @@ export type BoxProps<T extends Gtk.Box = Gtk.Box> = {
      */
     baselinePosition?: Gtk.BaselinePosition;
 
-    children?: JSX.Element | JSX.Element[];
+    children?: JSX.Element;
 } & GtkAccessibleProps &
     GtkOrientableProps &
     GtkWidgetProps<T> &
@@ -49,25 +51,10 @@ export type BoxProps<T extends Gtk.Box = Gtk.Box> = {
  */
 export const Box: Component<BoxProps> = (props) => {
     const [p, rest] = splitProps(props, ["children", "ref"]);
-    let ref: Gtk.Box;
     const childrenMemo = children(() => p.children);
-    createEffect(() => {
-        const elements = childrenMemo.toArray();
-        let child: Gtk.Widget | null = ref.get_first_child();
-        while (child) {
-            const current = child;
-            child = child.get_next_sibling();
-            ref.remove(current);
-        }
-        if (elements) {
-            for (const child of elements) {
-                ref.append(child);
-            }
-        }
-    });
     return (
         <Widget
-            ref={(r) => (ref = forwardRef(r, p.ref))}
+            ref={(r) => render(childrenMemo, r)}
             Widget={Gtk.Box}
             {...rest}
         />
@@ -84,19 +71,19 @@ export type CenterBoxPropBase<T extends Gtk.CenterBox = Gtk.CenterBox> = {
 
 export type CenterBoxProps<T extends Gtk.CenterBox = Gtk.CenterBox> = (
     | {
-          startWidget?: JSX.Element;
-          centerWidget?: JSX.Element;
-          endWidget?: JSX.Element;
-          children?: undefined;
+          startWidget?: Gtk.Widget;
+          centerWidget?: Gtk.Widget;
+          endWidget?: Gtk.Widget;
+          children?: never;
       }
     | {
-          startWidget?: undefined;
-          centerWidget?: undefined;
-          endWidget?: undefined;
+          startWidget?: never;
+          centerWidget?: never;
+          endWidget?: never;
           children?:
-              | [JSX.Element | null, JSX.Element | null, JSX.Element | null]
-              | [JSX.Element | null, JSX.Element | null]
-              | [JSX.Element | null]
+              | [Gtk.Widget | null, Gtk.Widget | null, Gtk.Widget | null]
+              | [Gtk.Widget | null, Gtk.Widget | null]
+              | [Gtk.Widget | null]
               | [];
       }
 ) &
@@ -214,10 +201,10 @@ export type ListViewProps<T extends Gtk.ListView = Gtk.ListView> = {
 
     // Signals
     /**
-     * 
-     * @param self 
-     * @param position 
-     * @returns 
+     *
+     * @param self
+     * @param position
+     * @returns
      * @event
      */
     onActivate: (self: T, position: number) => void;
@@ -241,8 +228,8 @@ export type HeaderBarProps<T extends Gtk.HeaderBar = Gtk.HeaderBar> = {
     decorationLayout?: string;
     showTitleButtons?: boolean;
     titleWidget?: Gtk.Widget;
-    start?: JSX.Element[];
-    end?: JSX.Element[];
+    start?: JSX.Element;
+    end?: JSX.Element;
 } & GtkWidgetProps<T> &
     GtkAccessibleProps &
     RefAble<T>;
@@ -254,34 +241,37 @@ export type HeaderBarProps<T extends Gtk.HeaderBar = Gtk.HeaderBar> = {
 export const HeaderBar: Component<HeaderBarProps> = (props) => {
     const [p, rest] = splitProps(props, ["start", "end", "ref"]);
     let ref: Gtk.HeaderBar;
-    const trackingWidgets: JSX.Element[] = [];
+    const trackingWidgets: Gtk.Widget[] = [];
 
     const startElements = children(() => p.start);
     const endElements = children(() => p.end);
 
-    createEffect(() => {
-        for (const element of trackingWidgets) {
-            ref.remove(element);
-        }
-        trackingWidgets.splice(0, trackingWidgets.length);
-
-        const starts = startElements.toArray();
-        if (starts)
-            for (const element of starts) {
-                ref.pack_start(element);
-                trackingWidgets.push(element);
-            }
-
-        const ends = endElements.toArray();
-        if (ends)
-            for (const element of ends) {
-                ref.pack_end(element);
-                trackingWidgets.push(element);
-            }
-    });
     return (
         <Widget
-            ref={(r) => (ref = forwardRef(r, p.ref))}
+            ref={(r) => {
+                createRenderEffect(() => {
+                    for (const element of trackingWidgets) {
+                        ref.remove(element);
+                    }
+                    trackingWidgets.splice(0, trackingWidgets.length);
+
+                    const starts = startElements.toArray();
+                    if (starts)
+                        for (const element of starts) {
+                            if (!element) break;
+                            r.pack_start(element);
+                            trackingWidgets.push(element);
+                        }
+
+                    const ends = endElements.toArray();
+                    if (ends)
+                        for (const element of ends) {
+                            if (!element) break;
+                            r.pack_end(element);
+                            trackingWidgets.push(element);
+                        }
+                });
+            }}
             Widget={Gtk.HeaderBar}
             {...rest}
         />

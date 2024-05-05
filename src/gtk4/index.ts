@@ -8,9 +8,10 @@ import GObject from "gi://GObject?version=2.0";
 import { start, createContext, useContext, applyContext } from "../reactive.js";
 import { SessionStorage } from "../storage.js";
 import { disconnectOnCleanup, registeredGClass } from "../gobject.js";
-import { Accessor, createMemo, onMount } from "../index.js";
+import { Accessor, createMemo, createRoot, onMount, type JSX } from "../index.js";
 import { useWindow } from "./windows.jsx";
 import { createStore } from "../store.js";
+import { insert } from "../jsx-runtime.js";
 
 export type * from "./common.js";
 
@@ -48,7 +49,9 @@ export interface GtkApplicationConfig {
 
 /**
  * Custom {@link Gtk.Application} for GSolid applications.
- * 
+ *
+ * Override {@link vfunc_activate} and use {@link begin} to run your application.
+ *
  * This class likes `window` or `document` for Web,
  * keeps multiple API entries for the application.
  */
@@ -58,62 +61,35 @@ export class GSolidApplication extends Gtk.Application {
      * The session storage. The data in this storage is only available during the application running.
      */
     sessionStorage: SessionStorage;
+    private disposer?: () => void;
 
     constructor(config?: Gtk.Application.ConstructorProperties) {
         super(config);
         this.sessionStorage = new SessionStorage();
     }
-}
 
-/**
- * Wrap application in a {@link Gtk.Application}.
- *
- * @param config
- * @param code the code will be executed in "activate" and reactive context.
- * @returns a class extends {@link Gtk.Application}
- */
-export function wrapApp(
-    config: GtkApplicationConfig,
-    code: (app: GSolidApplication) => void
-): typeof GSolidApplication {
-    return GObject.registerClass(
-        class extends GSolidApplication {
-            private disposer: (() => void) | undefined;
+    vfunc_startup(): void {
+        super.vfunc_startup();
+    }
 
-            constructor() {
-                super({
-                    application_id: config.applicationId,
-                    flags: config.flags ?? Gio.ApplicationFlags.DEFAULT_FLAGS,
-                });
-                this.disposer = undefined;
-            }
+    begin(code: (app: GSolidApplication) => void): void {
+        this.disposer = start(() => {
+            applyContext(ApplicationContext, this, () => {
+                code(this);
+            })();
+        });
+    }
 
-            vfunc_startup(): void {
-                super.vfunc_startup();
-            }
+    vfunc_shutdown(): void {
+        super.vfunc_shutdown();
 
-            vfunc_activate(): void {
-                super.vfunc_activate();
-
-                this.hold();
-
-                this.disposer = start(() => {
-                    applyContext(ApplicationContext, this, () => {
-                        code(this);
-                    })();
-                });
-            }
-
-            vfunc_shutdown(): void {
-                super.vfunc_shutdown();
-
-                if (this.disposer) {
-                    const disposer = this.disposer;
-                    disposer();
-                }
-            }
+        if (this.disposer) {
+            const disposer = this.disposer;
+            disposer();
         }
-    );
+    }
+
+
 }
 
 export interface MediaQueryData {
@@ -209,4 +185,11 @@ export function useMediaQuery<R>(filter?: (q: MediaQueryData) => R): MediaQueryD
     } else {
         return data
     }
+}
+
+export function render(expr: () => JSX.Element, mount: Gtk.Widget) {
+    return createRoot((dispose) => {
+        mount.connect("destroy", dispose)
+        insert(mount, expr);
+    });
 }
