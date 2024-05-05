@@ -9,6 +9,7 @@
         "src/store.ts",
         "src/storage.ts",
         "src/gobject.ts",
+        "src/package.ts"
     ],
     "include": ["src/gtk4/*.tsx", "src/gtk4/*.ts"],
     "compilerOptions": {
@@ -38,7 +39,8 @@
         "types": [
             "@girs/gjs",
             "@girs/gtk-4.0",
-            "@girs/soup-3.0"
+            "@girs/soup-3.0",
+            "@girs/girepository-2.0",
         ],
         "jsxImportSource": "gsolid",
         "esModuleInterop": true,

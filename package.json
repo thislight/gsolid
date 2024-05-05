@@ -46,6 +46,11 @@
             "types": "./types/storage.d.ts",
             "import": "./dist/storage.js",
             "require": "./dist/storage.cjs"
+        },
+        "./package": {
+            "types": "./types/package.d.ts",
+            "import": "./dist/package.js",
+            "require": "./dist/package.cjs"
         }
     },
     "files": [
@@ -58,7 +63,7 @@
     ],
     "scripts": {
         "build:types": "tsc",
-        "build:esm": "ts-node -T --esm build.ts",
+        "build:esm": "node --loader ts-node/esm build.ts",
         "build": "run-p build:*",
         "prepare": "run-p build:*",
         "build:doc": "typedoc"
@@ -77,6 +82,7 @@
         "solid-js": "^1.7.8"
     },
     "devDependencies": {
+        "@girs/girepository-2.0": "1.76.1-3.2.0",
         "@girs/gjs": "^3.2.0",
         "@girs/gtk-4.0": "4.10.4-3.2.0",
         "@girs/soup-3.0": "3.4.2-3.2.0",
