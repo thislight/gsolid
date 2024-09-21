@@ -56,7 +56,7 @@ export interface GtkApplicationConfig {
  * keeps multiple API entries for the application.
  */
 @registeredGClass({})
-export class GSolidApplication extends Gtk.Application {
+export class GSolidApp extends Gtk.Application {
     /**
      * The session storage. The data in this storage is only available during the application running.
      */
@@ -72,7 +72,7 @@ export class GSolidApplication extends Gtk.Application {
         super.vfunc_startup();
     }
 
-    begin(code: (app: GSolidApplication) => void): void {
+    begin(code: (app: GSolidApp) => void): void {
         this.disposer = start(() => {
             applyContext(ApplicationContext, this, () => {
                 code(this);
@@ -108,8 +108,8 @@ export interface MediaQueryData {
 }
 
 function getPerferredColorScheme(settings: Gtk.Settings) {
-    const prefersDarkScheme = settings.gtk_application_prefer_dark_theme;
-    const themeName = settings.gtk_theme_name;
+    const prefersDarkScheme = settings.gtkApplicationPreferDarkTheme;
+    const themeName = settings.gtkThemeName;
     if (prefersDarkScheme) {
         return "dark";
     } else if (themeName !== null) {
@@ -144,8 +144,8 @@ export function useMediaQuery<R>(filter?: (q: MediaQueryData) => R): MediaQueryD
     }
     const trackGSignal = disconnectOnCleanup([]);
     const [data, setData] = createStore<MediaQueryData>({
-        height: window.default_height,
-        width: window.default_width,
+        height: window.defaultHeight,
+        width: window.defaultWidth,
         prefersColorScheme: settings ? getPerferredColorScheme(settings) : null,
     });
     const updateColorScheme = (settings: Gtk.Settings) => {
@@ -192,4 +192,26 @@ export function render(expr: () => JSX.Element, mount: Gtk.Widget) {
         mount.connect("destroy", dispose)
         insert(mount, expr);
     });
+}
+
+@registeredGClass({})
+class FnApp extends GSolidApp {
+    private body: (app: GSolidApp) => void
+
+    constructor(body: (app: GSolidApp) => void, config?: Gtk.Application.ConstructorProperties) {
+        super(config);
+        this.body = body;
+    }
+
+    vfunc_activate(): void {
+        super.vfunc_activate()
+        this.begin(this.body);
+    }
+}
+
+/**
+ * Create new application.
+ */
+export function createApp(activate: (app: GSolidApp) => void, config?: Gtk.Application.ConstructorProperties) : GSolidApp {
+    return new FnApp(activate, config)
 }

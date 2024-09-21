@@ -17,17 +17,21 @@ export function registeredGClass<
     };
 }
 
+export interface Disconnectable {
+    disconnect(id: number): void
+}
+
 /**
  * Disconnect signals on cleanning up.
- * @param signals 
+ * @param signals
  */
-export function disconnectOnCleanup(signals: [GObject.Object, number][]) {
+export function disconnectOnCleanup(signals: [Disconnectable, number][]) {
     onCleanup(() => {
         for (const [object, id] of signals) {
             object.disconnect(id)
         }
     })
-    return (object: GObject.Object, id: number) => {
+    return (object: Disconnectable, id: number) => {
         signals.push([object, id])
     }
 }

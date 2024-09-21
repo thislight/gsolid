@@ -12,6 +12,7 @@
         "src/package.ts"
     ],
     "include": ["src/gtk4/*.tsx", "src/gtk4/*.ts"],
+    "exclude": ["node_modules/"],
     "compilerOptions": {
         "emitDeclarationOnly": true,
         "declaration": true,
@@ -24,6 +25,7 @@
         "outDir": "types",
         "isolatedModules": true,
         "experimentalDecorators": true,
+        "skipLibCheck": true,
         "lib": [
             "ES2015",
             "ES2016",
@@ -45,5 +47,5 @@
         "jsxImportSource": "gsolid",
         "esModuleInterop": true,
         "rootDir": "./src"
-    }
+    },
 }

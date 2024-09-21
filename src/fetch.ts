@@ -227,6 +227,10 @@ export class Response {
                     GLib.PRIORITY_DEFAULT,
                     null,
                     (input, res) => {
+                        if (!input) {
+                            reject(new NetworkError("input stream is lost"));
+                            return;
+                        }
                         try {
                             const bytes = input.read_bytes_finish(res);
                             if (bytes.get_size() > 0) {
@@ -246,7 +250,7 @@ export class Response {
                                 this.body!.close_async(
                                     GLib.PRIORITY_DEFAULT_IDLE,
                                     null,
-                                    (input, res) => input.close_finish(res)
+                                    (input, res) => input?.close_finish(res)
                                 );
                             }
                         } catch (e) {
@@ -303,6 +307,7 @@ function fillSoupRequest(request: Request, target: Soup.Message) {
     if (request.bodyUsed) {
         target.set_request_body(
             null,
+            // @ts-ignore: the tsc resolve the Gio to the one inside pangocario
             request.body,
             request.bodyLength != null ? request.bodyLength : -1
         );
@@ -342,6 +347,7 @@ export class Client {
                         const body = session.send_finish(result);
                         const url = message.get_uri().to_string() as string;
                         resolve(
+                            // @ts-ignore: the body is Gio.InputStream
                             new Response(body, {
                                 url,
                                 status: message.get_status(),

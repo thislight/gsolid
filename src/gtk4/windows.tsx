@@ -17,6 +17,7 @@ import {
     useContext,
     onCleanup,
     children,
+    disconnectOnCleanup,
 } from "../index.js";
 import { forwardRef, useWidget } from "../widget.jsx";
 import { createStore } from "solid-js/store";
@@ -229,29 +230,17 @@ export function useWindowSize(): WindowGeometry {
         });
     };
 
-    const signalCleanups: [GObject.Object, number][] = [];
+    const trackGSignal = disconnectOnCleanup([])
 
-    signalCleanups.push([
-        window,
-        window.connect("realize", () => {
-            const surface = window.get_surface();
-            if (surface == null) {
-                throw new ReferenceError(
-                    "window is not associated with a GdkSurface"
-                );
-            }
-            signalCleanups.push([
-                surface,
-                surface.connect("layout", resetWindowGeometry),
-            ]);
-        }),
-    ]);
-
-    onCleanup(() => {
-        for (const [object, id] of signalCleanups) {
-            object.disconnect(id);
+    trackGSignal(window, window.connect("realize", () => {
+        const surface = window.get_surface();
+        if (surface == null) {
+            throw new ReferenceError(
+                "window is not associated with a GdkSurface"
+            );
         }
-    });
+        trackGSignal(surface, surface.connect("layout", resetWindowGeometry))
+    }),)
 
     onMount(resetWindowGeometry);
 

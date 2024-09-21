@@ -25,7 +25,7 @@ import Gio from "gi://Gio";
 import GObject from "gi://GObject";
 import System from "system";
 import Gettext from "gettext";
-import GIRepository from "gi://GIRepository";
+import GIRepository from "gi://GIRepository?version=2.0";
 
 // public
 export let name: string;

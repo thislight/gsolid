@@ -87,7 +87,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * Emitted when the widget is going to be destoried.
      * @param e 
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-destroy
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-destroy
      */
     onDestory?: (e: T) => void;
     /**
@@ -96,7 +96,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param previousDirection 
      * @returns 
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-direction-changed
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-direction-changed
      */
     onDirectionChanged?: (e: T, previousDirection: Gtk.TextDirection) => void;
     /**
@@ -104,7 +104,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param e 
      * @returns 
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-hide
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-hide
      */
     onHide?: (e: T) => void;
     /**
@@ -112,7 +112,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @returns TRUE if stopping keyboard navigation is fine,
      * FALSE if the emitting widget should try to handle the keyboard navigation attempt in its parent widget(s).
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-keynav-failed
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-keynav-failed
      */
     onKeynavFailed?: (e: T, direction: Gtk.DirectionType) => boolean;
     /**
@@ -120,7 +120,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param e 
      * @returns 
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-map
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-map
      */
     onMap?: (e: T) => void;
     /**
@@ -131,7 +131,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @returns TRUE to stop other handlers from being invoked for the event.
      * FALSE to propagate the event further.
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-mnemonic-activate
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-mnemonic-activate
      */
     onMnemonicActivate?: (e: T, groupCycling: boolean) => void;
     /**
@@ -140,7 +140,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param direction 
      * @returns 
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-move-focus
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-move-focus
      */
     onMoveFocus?: (e: T, direction: Gtk.DirectionType) => void;
     /**
@@ -155,7 +155,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param tooltip The data is owned by the caller of the function.
      * @returns TRUE if tooltip should be shown right now, FALSE otherwise.
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-query-tooltip
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-query-tooltip
      */
     onQueryTooltip?: (
         e: T,
@@ -169,7 +169,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param e 
      * @returns
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-realize
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-realize
      */
     onRealize?: (e: T) => void;
     /**
@@ -177,7 +177,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param e 
      * @returns 
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-show
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-show
      */
     onShow?: (e: T) => void;
     /**
@@ -186,7 +186,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param flags 
      * @returns 
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-state-flags-changed
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-state-flags-changed
      */
     onStateFlagsChanged?: (e: T, flags: Gtk.StateFlags) => void;
     /**
@@ -194,7 +194,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param e 
      * @returns 
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-unmap
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-unmap
      */
     onUnmap?: (e: T) => void;
     /**
@@ -202,7 +202,7 @@ export interface GtkWidgetProps<T extends Gtk.Widget> {
      * @param e 
      * @returns 
      * @event
-     * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-unrealize
+     * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.widget#signal-unrealize
      */
     onUnrealize?: (e: T) => void;
 }

@@ -9,7 +9,7 @@
         "src/store.ts",
         "src/web-ponyfill.ts",
         "src/storage.ts",
-        "src/package.ts",
+        "src/package.ts"
     ],
     "out": "./docs-dist",
     "includeVersion": true,
@@ -18,5 +18,12 @@
         "private": false,
         "inherited": true,
         "external": true
-    }
+    },
+    "highlightLanguages": [
+        "js",
+        "ts",
+        "jsx",
+        "tsx",
+        "c"
+    ]
 }

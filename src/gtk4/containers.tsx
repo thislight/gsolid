@@ -178,7 +178,7 @@ export type ScrolledWindowProps<
 /**
  * `ScrolledWindow` is a container that makes its child scrollable.
  *
- * @link https://gjs-docs.gnome.org/gtk40~4.0/gtk.scrolledwindow
+ * @see https://gjs-docs.gnome.org/gtk40~4.0/gtk.scrolledwindow
  * @group Components
  */
 export const ScrolledWindow: Component<ScrolledWindowProps> = (props) => {
