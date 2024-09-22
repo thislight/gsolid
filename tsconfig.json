@@ -8,8 +8,7 @@
         "src/reactive.ts",
         "src/store.ts",
         "src/storage.ts",
-        "src/gobject.ts",
-        "src/package.ts"
+        "src/gobject.ts"
     ],
     "include": ["src/gtk4/*.tsx", "src/gtk4/*.ts"],
     "exclude": ["node_modules/"],

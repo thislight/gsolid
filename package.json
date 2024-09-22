@@ -46,11 +46,6 @@
             "types": "./types/storage.d.ts",
             "import": "./dist/storage.js",
             "require": "./dist/storage.cjs"
-        },
-        "./package": {
-            "types": "./types/package.d.ts",
-            "import": "./dist/package.js",
-            "require": "./dist/package.cjs"
         }
     },
     "files": [

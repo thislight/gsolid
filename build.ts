@@ -11,7 +11,6 @@ const entryPoints = [
     "src/store.ts",
     "src/storage.ts",
     "src/gobject.ts",
-    "src/package.ts",
 ];
 
 const gtk4JsxEntryPoints = [

@@ -8,8 +8,7 @@
         "src/fetch.ts",
         "src/store.ts",
         "src/web-ponyfill.ts",
-        "src/storage.ts",
-        "src/package.ts"
+        "src/storage.ts"
     ],
     "out": "./docs-dist",
     "includeVersion": true,
