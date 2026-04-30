@@ -12,14 +12,20 @@ Launch your project in seconds with [gsolid-app-starter](https://github.com/this
 
 ```jsx
 import Gtk from "gi://Gtk?version=4.0";
+import GObject from "gi://GObject?version=2.0";
 import { createSignal } from "gsolid";
-import { Box, Button, Label, ReactiveWindow, createApp } from "gsolid/gtk4";
+import { Box, Button, Label, Window, GSolidApp } from "gsolid/gtk4";
 
-createApp((app) => {
-    const [counter, setCounter] = createSignal(0);
-    app.add_window(
-        <Window
-            open={true}
+class MyApp extends GSolidApp {
+    static {
+        GObject.registerClass({}, this);
+    }
+
+    override vfunc_startup() {
+        super.vfunc_startup();
+
+        this.render(() => <Window
+            open
             onCloseRequest={() => false}
             title="Hello World!"
             defaultWidth={300}
@@ -34,9 +40,11 @@ createApp((app) => {
                     onClicked={() => setCounter((x) => x + 1)}
                 />
             </Box>
-        </Window> as Gtk.Window);
-}, { application_id: "org.example.MyApp" }).run(null);
+        </Window>);
+    }
+}
 
+new MyApp({application_id: "org.example.MyApp"}).run(null)
 ```
 
 ## Bundling

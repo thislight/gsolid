@@ -7,8 +7,14 @@ import Gio from "gi://Gio?version=2.0";
 import GObject from "gi://GObject?version=2.0";
 import { start, createContext, useContext, applyContext } from "../reactive.js";
 import { SessionStorage } from "../storage.js";
-import { disconnectOnCleanup, registeredGClass } from "../gobject.js";
-import { Accessor, createMemo, createRoot, onMount, type JSX } from "../index.js";
+import { disconnectOnCleanup } from "../gobject.js";
+import {
+    Accessor,
+    createMemo,
+    createRoot,
+    onMount,
+    type JSX,
+} from "../index.js";
 import { useWindow } from "./windows.jsx";
 import { createStore } from "../store.js";
 import { insert } from "../jsx-runtime.js";
@@ -26,15 +32,15 @@ export * from "./entries.jsx";
 export * from "./windows.jsx";
 
 export const ApplicationContext =
-    /* @__PURE__ */ createContext<Gtk.Application>();
+    /* @__PURE__ */ createContext<GSolidApp>();
 
 /**
  * Get nearest {@link Gtk.Application} on tree.
- * 
+ *
  * @throws ReferenceError if {@link ApplicationContext} is set
  * @returns value from {@link ApplicationContext}
  */
-export function useApplication(): Gtk.Application {
+export function useApplication(): GSolidApp {
     const app = useContext(ApplicationContext);
     if (!app) {
         throw new ReferenceError("no application on tree");
@@ -50,13 +56,16 @@ export interface GtkApplicationConfig {
 /**
  * Custom {@link Gtk.Application} for GSolid applications.
  *
- * Override {@link vfunc_activate} and use {@link begin} to run your application.
+ * Override {@link vfunc_activate} and use {@link render} to run your application.
  *
  * This class likes `window` or `document` for Web,
  * keeps multiple API entries for the application.
  */
-@registeredGClass({})
 export class GSolidApp extends Gtk.Application {
+    static {
+        GObject.registerClass({}, this);
+    }
+
     /**
      * The session storage. The data in this storage is only available during the application running.
      */
@@ -72,7 +81,30 @@ export class GSolidApp extends Gtk.Application {
         super.vfunc_startup();
     }
 
-    begin(code: (app: GSolidApp) => void): void {
+    /**
+     * Render your application.
+     *
+     * You can call it multiple times at any time (as application activated),
+     * every call will dispose the last rendering.
+     *
+     * ```ts
+     * class MyApp extends GSolidApp {
+     *  override vfunc_startup() {
+     *      super.vfunc_startup();
+     *
+     *      this.render(() => <Window open>
+     *          <Label label="Hello World" />
+     *      </Window>);
+     *  }
+     * }
+     * ```
+     */
+    render(code: (app: GSolidApp) => void): void {
+        if (this.disposer) {
+            const disposer = this.disposer;
+            disposer();
+        }
+
         this.disposer = start(() => {
             applyContext(ApplicationContext, this, () => {
                 code(this);
@@ -88,8 +120,6 @@ export class GSolidApp extends Gtk.Application {
             disposer();
         }
     }
-
-
 }
 
 export interface MediaQueryData {
@@ -121,25 +151,27 @@ function getPerferredColorScheme(settings: Gtk.Settings) {
 
 /**
  * Get reactive infomation about the nearest window on tree and user preferences.
- * 
+ *
  * @returns the media query data
  */
 export function useMediaQuery(): MediaQueryData;
 
 /**
  * Get reactive infomation about the nearest window on tree and user preferences.
- * 
+ *
  * @param filter return filtered data if specified
  * @returns the data transformed by the filter
  */
 export function useMediaQuery<R>(filter: (q: MediaQueryData) => R): Accessor<R>;
 
-export function useMediaQuery<R>(filter?: (q: MediaQueryData) => R): MediaQueryData | Accessor<R> {
+export function useMediaQuery<R>(
+    filter?: (q: MediaQueryData) => R,
+): MediaQueryData | Accessor<R> {
     const window = useWindow();
     const settings = Gtk.Settings.get_default();
     if (!settings) {
         console.warn(
-            "Gtk.Settings.get_default() gets null, could not detect dark theme."
+            "Gtk.Settings.get_default() gets null, could not detect dark theme.",
         );
     }
     const trackGSignal = disconnectOnCleanup([]);
@@ -163,55 +195,33 @@ export function useMediaQuery<R>(filter?: (q: MediaQueryData) => R): MediaQueryD
                     height: surface.height,
                     width: surface.width,
                 });
-            })
+            }),
         );
         if (settings) {
             trackGSignal(
                 settings,
                 settings.connect(
                     "notify::gtk-application-prefer-dark-theme",
-                    updateColorScheme
-                )
+                    updateColorScheme,
+                ),
             );
             trackGSignal(
                 settings,
-                settings.connect("notify::gtk-theme-name", updateColorScheme)
+                settings.connect("notify::gtk-theme-name", updateColorScheme),
             );
         }
     });
 
     if (filter) {
-        return createMemo(() => filter(data))
+        return createMemo(() => filter(data));
     } else {
-        return data
+        return data;
     }
 }
 
 export function render(expr: () => JSX.Element, mount: Gtk.Widget) {
     return createRoot((dispose) => {
-        mount.connect("destroy", dispose)
+        mount.connect("destroy", dispose);
         insert(mount, expr);
     });
-}
-
-@registeredGClass({})
-class FnApp extends GSolidApp {
-    private body: (app: GSolidApp) => void
-
-    constructor(body: (app: GSolidApp) => void, config?: Gtk.Application.ConstructorProperties) {
-        super(config);
-        this.body = body;
-    }
-
-    vfunc_activate(): void {
-        super.vfunc_activate()
-        this.begin(this.body);
-    }
-}
-
-/**
- * Create new application.
- */
-export function createApp(activate: (app: GSolidApp) => void, config?: Gtk.Application.ConstructorProperties) : GSolidApp {
-    return new FnApp(activate, config)
 }
