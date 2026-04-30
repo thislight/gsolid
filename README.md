@@ -18,7 +18,7 @@ import { Box, Button, Label, ReactiveWindow, createApp } from "gsolid/gtk4";
 createApp((app) => {
     const [counter, setCounter] = createSignal(0);
     app.add_window(
-        <ReactiveWindow
+        <Window
             open={true}
             onCloseRequest={() => false}
             title="Hello World!"
@@ -34,7 +34,7 @@ createApp((app) => {
                     onClicked={() => setCounter((x) => x + 1)}
                 />
             </Box>
-        </ReactiveWindow> as Gtk.Window);
+        </Window> as Gtk.Window);
 }, { application_id: "org.example.MyApp" }).run(null);
 
 ```

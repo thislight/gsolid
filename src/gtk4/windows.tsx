@@ -5,7 +5,6 @@
 
 import Gtk from "gi://Gtk?version=4.0";
 import Gdk from "gi://Gdk?version=4.0";
-import GObject from "gi://GObject?version=2.0";
 import { GtkAccessibleProps, GtkWidgetProps, RefAble } from "./common.js";
 import {
     Component,
@@ -15,7 +14,6 @@ import {
     splitProps,
     createContext,
     useContext,
-    onCleanup,
     children,
     disconnectOnCleanup,
 } from "../index.js";
@@ -26,7 +24,7 @@ export const WindowContext = /* @__PURE__ */ createContext<Gtk.Window>();
 
 /**
  * Get nearset {@link WindowContext} value on tree.
- * 
+ *
  * @throws ReferenceError if {@link WindowContext} is unset
  * @returns value from {@link WindowContext}
  */
@@ -63,23 +61,23 @@ export type WindowProps<T extends Gtk.Window = Gtk.Window> = {
 
     // Signals
     /**
-     * 
+     *
      * @param self 
-     * @returns 
+     * @returns
      * @event
      */
     onActivateDefaullt?: (self: T) => void;
     /**
      * 
-     * @param self 
+     * @param self
      * @returns 
      * @event
      */
     onActivateFocus?: (self: T) => void;
     /**
-     * 
+     *
      * @param self 
-     * @returns 
+     * @returns
      * @event
      */
     onCloseRequest?: (self: T) => boolean;
@@ -97,7 +95,7 @@ export type WindowProps<T extends Gtk.Window = Gtk.Window> = {
  * This component sets `WindowContext`.
  * @group Components
  */
-export const Window: Component<WindowProps> = (props) => {
+const GtkWindow: Component<WindowProps> = (props) => {
     const [p, rest] = splitProps(props, ["children"]);
     const node: Gtk.Window = useWidget(Gtk.Window, rest);
     const child = children(() => (
@@ -136,11 +134,14 @@ export const Window: Component<WindowProps> = (props) => {
  * ````jsx
  * const [isOpen, setIsOpen] = createSignal(true)
  *
- * <ReactiveWindow open={isOpen()} onCloseRequest={() => setIsOpen(x => !x)} />
+ * <Window open={isOpen()} onCloseRequest={() => setIsOpen(x => !x)} />
  * ````
+ *
+ * This component sets `WindowContext`.
+ *
  * @group Components
  */
-export const ReactiveWindow: Component<WindowProps & { open: boolean }> = (
+export const Window: Component<WindowProps & { open: boolean }> = (
     props
 ) => {
     const [p, rest] = splitProps(props, ["ref", "open"]);
@@ -159,7 +160,7 @@ export const ReactiveWindow: Component<WindowProps & { open: boolean }> = (
         }
     });
 
-    return <Window ref={(r) => (ref = forwardRef(r, p.ref))} {...rest} />;
+    return <GtkWindow ref={(r) => (ref = forwardRef(r, p.ref))} {...rest} />;
 };
 
 /**
