@@ -73,7 +73,7 @@
     ],
     "license": "Apache-2.0",
     "dependencies": {
-        "solid-js": "^1.7.8"
+        "solid-js": "^1.9.12"
     },
     "devDependencies": {
         "@girs/girepository-2.0": "1.78.1-3.3.0",
