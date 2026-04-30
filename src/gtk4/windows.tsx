@@ -16,9 +16,11 @@ import {
     useContext,
     children,
     disconnectOnCleanup,
+    catchError,
 } from "../index.js";
-import { forwardRef, useWidget } from "../widget.jsx";
+import { useWidget } from "../widget.jsx";
 import { createStore } from "solid-js/store";
+import { useApplication } from "./index.js";
 
 export const WindowContext = /* @__PURE__ */ createContext<Gtk.Window>();
 
@@ -62,21 +64,21 @@ export type WindowProps<T extends Gtk.Window = Gtk.Window> = {
     // Signals
     /**
      *
-     * @param self 
+     * @param self
      * @returns
      * @event
      */
     onActivateDefaullt?: (self: T) => void;
     /**
-     * 
+     *
      * @param self
-     * @returns 
+     * @returns
      * @event
      */
     onActivateFocus?: (self: T) => void;
     /**
      *
-     * @param self 
+     * @param self
      * @returns
      * @event
      */
@@ -88,29 +90,6 @@ export type WindowProps<T extends Gtk.Window = Gtk.Window> = {
 } & GtkWidgetProps<T> &
     GtkAccessibleProps &
     RefAble<T>;
-
-/**
- * Window as a component.
- *
- * This component sets `WindowContext`.
- * @group Components
- */
-const GtkWindow: Component<WindowProps> = (props) => {
-    const [p, rest] = splitProps(props, ["children"]);
-    const node: Gtk.Window = useWidget(Gtk.Window, rest);
-    const child = children(() => (
-        <WindowContext.Provider value={node} children={p.children} />
-    ));
-    createRenderEffect(() => {
-        const c = child();
-        if (c) {
-            node.set_child(c);
-        } else {
-            node.set_child(null);
-        }
-    });
-    return node;
-};
 
 /**
  * Reactive window additionally receives `open` property to open or close winodw.
@@ -138,14 +117,37 @@ const GtkWindow: Component<WindowProps> = (props) => {
  * ````
  *
  * This component sets `WindowContext`.
+ * It will automatically connect to the current application if it exists.
  *
  * @group Components
  */
-export const Window: Component<WindowProps & { open: boolean }> = (
-    props
-) => {
-    const [p, rest] = splitProps(props, ["ref", "open"]);
-    let ref: Gtk.Window;
+export const Window: Component<WindowProps & { open: boolean }> = (props) => {
+    const [p, rest] = splitProps(props, ["ref", "children", "open"]);
+    const ref: Gtk.Window = useWidget(Gtk.Window, rest);
+    const child = children(() => (
+        <WindowContext.Provider value={ref} children={p.children} />
+    ));
+
+    const app = catchError(useApplication, (reason) => {
+        if (reason instanceof ReferenceError) {
+            console.debug(
+                "<Window /> is not connected to an application automatically.",
+                reason,
+            );
+        }
+    });
+    if (app) {
+        app.add_window(ref);
+    }
+
+    createRenderEffect(() => {
+        const c = child();
+        if (c) {
+            ref.set_child(c);
+        } else {
+            ref.set_child(null);
+        }
+    });
 
     onMount(() => {
         const currentOpen = ref.is_visible();
@@ -160,7 +162,7 @@ export const Window: Component<WindowProps & { open: boolean }> = (
         }
     });
 
-    return <GtkWindow ref={(r) => (ref = forwardRef(r, p.ref))} {...rest} />;
+    return ref;
 };
 
 /**
@@ -231,17 +233,23 @@ export function useWindowSize(): WindowGeometry {
         });
     };
 
-    const trackGSignal = disconnectOnCleanup([])
+    const trackGSignal = disconnectOnCleanup([]);
 
-    trackGSignal(window, window.connect("realize", () => {
-        const surface = window.get_surface();
-        if (surface == null) {
-            throw new ReferenceError(
-                "window is not associated with a GdkSurface"
+    trackGSignal(
+        window,
+        window.connect("realize", () => {
+            const surface = window.get_surface();
+            if (surface == null) {
+                throw new ReferenceError(
+                    "window is not associated with a GdkSurface",
+                );
+            }
+            trackGSignal(
+                surface,
+                surface.connect("layout", resetWindowGeometry),
             );
-        }
-        trackGSignal(surface, surface.connect("layout", resetWindowGeometry))
-    }),)
+        }),
+    );
 
     onMount(resetWindowGeometry);
 
