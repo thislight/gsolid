@@ -18,11 +18,19 @@
         "inherited": true,
         "external": true
     },
-    "highlightLanguages": [
-        "js",
-        "ts",
-        "jsx",
-        "tsx",
-        "c"
-    ]
+    "projectDocuments": ["README.md", "docs/*.md"],
+    "highlightLanguages": ["js", "ts", "jsx", "tsx", "c", "json5", "xml"],
+    "externalSymbolLinkMappings": {
+        "solid-js": {
+            "ResourceOptions": "https://docs.solidjs.com/reference/basic-reactivity/create-resource#related-types"
+        },
+        "@girs/gtk-4.0": {
+            "Gtk.Box": "https://gjsify.github.io/docs/classes/Gtk-4.0.Gtk.Box.html",
+            "Gtk.CheckButton": "https://gjsify.github.io/docs/classes/Gtk-4.0.Gtk.CheckButton.html",
+            "Gtk.Application": "https://gjsify.github.io/docs/classes/Gtk-4.0.Gtk.Application.html"
+        },
+        "@girs/gio-2.0": {
+            "Gio.InputStream": "https://gjsify.github.io/docs/classes/Gio-2.0.Gio.InputStream.html"
+        }
+    }
 }
