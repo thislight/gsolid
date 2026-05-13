@@ -5,13 +5,14 @@
 import Gtk from "gi://Gtk?version=4.0";
 import Gio from "gi://Gio?version=2.0";
 import GObject from "gi://GObject?version=2.0";
-import { createContext, useContext, applyContext } from "../reactive.js";
+import { createContext, useContext } from "../reactive.js";
 import { SessionStorage } from "../storage.js";
 import { disconnectOnCleanup } from "../gobject.js";
 import {
     Accessor,
     createMemo,
     createRoot,
+    getOwner,
     onMount,
     type JSX,
 } from "../index.js";
@@ -31,6 +32,11 @@ export * from "./entries.jsx";
 
 export * from "./windows.jsx";
 
+/**
+ * Current application in running.
+ *
+ * It's automatically set for code run by {@link GSolidApp.render}.
+ */
 export const ApplicationContext = /* @__PURE__ */ createContext<GSolidApp>();
 
 /**
@@ -106,9 +112,9 @@ export class GSolidApp extends Gtk.Application {
 
         createRoot((dispose) => {
             this.disposer = dispose;
-            applyContext(ApplicationContext, this, () => {
+            const owner = getOwner()
+            owner!.context = { [ApplicationContext.id]: this };
                 code(this);
-            })();
         });
     }
 

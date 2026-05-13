@@ -43,7 +43,6 @@ export {
     children,
     createContext,
     useContext,
-    applyContext,
 } from "./reactive.js";
 
 export type {
