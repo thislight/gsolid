@@ -12,12 +12,11 @@ import {
     Accessor,
     createMemo,
     createRoot,
+    createSignal,
     getOwner,
-    onMount,
     type JSX,
 } from "../index.js";
 import { useWindow } from "./windows.jsx";
-import { createStore } from "../store.js";
 import { insert } from "../jsx-runtime.js";
 
 export type * from "./common.js";
@@ -115,7 +114,7 @@ export class GSolidApp extends Gtk.Application {
 
         createRoot((dispose) => {
             this.disposer = dispose;
-            const owner = getOwner()
+            const owner = getOwner();
             owner!.context = { [ApplicationContext.id]: this };
             code(this);
         });
@@ -141,12 +140,16 @@ export interface MediaQueryData {
      */
     readonly width: number;
     /**
+     * The scale fator that maps from application coordinates to the actual device pixels.
+     */
+    readonly devicePixelRatio: number;
+    /**
      * The color scheme user prefers. `null` when failed to detect one.
      */
     readonly prefersColorScheme: "dark" | "light" | null;
 }
 
-function getPerferredColorScheme(settings: Gtk.Settings) {
+function readPerferredColorScheme(settings: Gtk.Settings) {
     const prefersDarkScheme = settings.gtkApplicationPreferDarkTheme;
     const themeName = settings.gtkThemeName;
     if (prefersDarkScheme) {
@@ -184,28 +187,18 @@ export function useMediaQuery<R>(
         );
     }
     const trackGSignal = disconnectOnCleanup([]);
-    const [data, setData] = createStore<MediaQueryData>({
-        height: window.defaultHeight,
-        width: window.defaultWidth,
-        prefersColorScheme: settings ? getPerferredColorScheme(settings) : null,
-    });
+
+    const [getPrefersColorScheme, setPrefersColorScheme] = createSignal<
+        "dark" | "light" | null
+    >(settings ? readPerferredColorScheme(settings) : null);
+
     const updateColorScheme = (settings: Gtk.Settings) => {
-        setData({
-            prefersColorScheme: getPerferredColorScheme(settings),
-        });
+        setPrefersColorScheme(readPerferredColorScheme(settings));
     };
 
-    onMount(() => {
-        const surface = window.get_surface();
-        trackGSignal(
-            surface,
-            surface.connect("layout", () => {
-                setData({
-                    height: surface.height,
-                    width: surface.width,
-                });
-            }),
-        );
+    let trackingTheme = false;
+    const trackTheme = () => {
+        if (trackingTheme) return;
         if (settings) {
             trackGSignal(
                 settings,
@@ -218,13 +211,58 @@ export function useMediaQuery<R>(
                 settings,
                 settings.connect("notify::gtk-theme-name", updateColorScheme),
             );
+            trackingTheme = true;
         }
+    };
+
+    const [SurfaceSize, setSurfaceSize] = createSignal<
+        Pick<MediaQueryData, "height" | "width" | "devicePixelRatio">
+    >({
+        height: window.defaultHeight,
+        width: window.defaultWidth,
+        devicePixelRatio: window.scaleFactor,
     });
 
+    let trackingSurfaceLayout = false;
+    const trackSurfaceLayout = () => {
+        if (trackingSurfaceLayout) return;
+        const surface = window.get_surface();
+        trackGSignal(
+            surface,
+            surface.connect("layout", () => {
+                setSurfaceSize({
+                    height: surface.height,
+                    width: surface.width,
+                    devicePixelRatio: surface.scaleFactor,
+                });
+            }),
+        );
+        trackingSurfaceLayout = true;
+    };
+
+    const wrapper = {
+        get prefersColorScheme() {
+            trackTheme();
+            return getPrefersColorScheme();
+        },
+        get height() {
+            trackSurfaceLayout();
+            return SurfaceSize().height;
+        },
+        get width() {
+            trackSurfaceLayout();
+            return SurfaceSize().width;
+        },
+        get devicePixelRatio() {
+            trackSurfaceLayout();
+            return SurfaceSize().devicePixelRatio;
+        },
+    } satisfies MediaQueryData;
+
     if (filter) {
-        return createMemo(() => filter(data));
+        return createMemo(() => filter(wrapper));
     } else {
-        return data;
+        return wrapper;
     }
 }
 
