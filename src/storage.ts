@@ -3,7 +3,6 @@
  * @module
  */
 import GObject from "gi://GObject?version=2.0";
-import { registeredGClass } from "./gobject";
 
 export interface StorageEventMap {
     storage: (event: StorageEvent) => void;
@@ -26,13 +25,15 @@ export interface Storage {
 
     connect<K extends keyof StorageEventMap>(
         name: K,
-        callback: StorageEventMap[K]
+        callback: StorageEventMap[K],
     ): number;
     disconnect(id: number): void;
 }
 
-@registeredGClass({})
 export class GStorageEvent extends GObject.Object implements StorageEvent {
+    static {
+        GObject.registerClass(this);
+    }
     readonly key: string | null;
     readonly newValue: string | null;
     readonly oldValue: string | null;
@@ -57,15 +58,20 @@ export class GStorageEvent extends GObject.Object implements StorageEvent {
     }
 }
 
-@registeredGClass({
-    Signals: {
-        storage: {
-            param_types: [GStorageEvent.$gtype],
-            return_value: GObject.TYPE_NONE,
-        },
-    },
-})
 export class SessionStorage extends GObject.Object implements Storage {
+    static {
+        GObject.registerClass(
+            {
+                Signals: {
+                    storage: {
+                        param_types: [GStorageEvent.$gtype],
+                        return_value: GObject.TYPE_NONE,
+                    },
+                },
+            },
+            this,
+        );
+    }
     private dict: Map<string, string>;
     private allKeys: string[];
 
@@ -117,8 +123,11 @@ export class SessionStorage extends GObject.Object implements Storage {
     private emitStorageEvent(
         k: string | null,
         nval: string | null,
-        oval: string | null
+        oval: string | null,
     ) {
-        this.emit("storage", new GStorageEvent({key: k, nval, oval, area: this}));
+        this.emit(
+            "storage",
+            new GStorageEvent({ key: k, nval, oval, area: this }),
+        );
     }
 }
