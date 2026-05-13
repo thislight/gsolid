@@ -126,34 +126,6 @@ export function children(fn: Accessor<any>): any {
     return memo as AnyChildrenResult;
 }
 
-/**
- * Start your `code`. You can use JSX and reactive permitive in `code` before the returned `disposer` called.
- *
- * ````jsx
- * const dispose = start(() => {
- *  <ReactiveWindow open={true} onCloseRequest={() => {
- *      dispose();
- *      loop.quit();
- *      return true;
- *  }}>
- *      <Label label="Hello World" />
- *  </ReactiveWindow>
- * })
- *
- * loop.run()
- * ````
- * @param code
- * @returns the dispose function
- */
-export function start(code: () => void) {
-    let disposer: () => void;
-    createRoot((d) => {
-        disposer = d;
-        code();
-    });
-    return disposer!;
-}
-
 export interface EffectOptions {
     name?: string;
 }

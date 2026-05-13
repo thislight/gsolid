@@ -5,7 +5,7 @@
 import Gtk from "gi://Gtk?version=4.0";
 import Gio from "gi://Gio?version=2.0";
 import GObject from "gi://GObject?version=2.0";
-import { start, createContext, useContext, applyContext } from "../reactive.js";
+import { createContext, useContext, applyContext } from "../reactive.js";
 import { SessionStorage } from "../storage.js";
 import { disconnectOnCleanup } from "../gobject.js";
 import {
@@ -31,8 +31,7 @@ export * from "./entries.jsx";
 
 export * from "./windows.jsx";
 
-export const ApplicationContext =
-    /* @__PURE__ */ createContext<GSolidApp>();
+export const ApplicationContext = /* @__PURE__ */ createContext<GSolidApp>();
 
 /**
  * Get nearest {@link Gtk.Application} on tree.
@@ -105,7 +104,8 @@ export class GSolidApp extends Gtk.Application {
             disposer();
         }
 
-        this.disposer = start(() => {
+        createRoot((dispose) => {
+            this.disposer = dispose;
             applyContext(ApplicationContext, this, () => {
                 code(this);
             })();

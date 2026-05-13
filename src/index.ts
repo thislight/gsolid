@@ -41,7 +41,6 @@ export {
 
 export {
     children,
-    start,
     createContext,
     useContext,
     applyContext,
