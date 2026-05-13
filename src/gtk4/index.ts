@@ -72,14 +72,17 @@ export class GSolidApp extends Gtk.Application {
     }
 
     /**
-     * The session storage. The data in this storage is only available during the application running.
+     * Created session storage.
+     *
+     * use {@link useSessionStorage} to get session storage.
+     *
+     * @see useSessionStorage
      */
-    sessionStorage: SessionStorage;
+    sessionStorage?: SessionStorage;
     private disposer?: () => void;
 
     constructor(config?: Gtk.Application.ConstructorProperties) {
         super(config);
-        this.sessionStorage = new SessionStorage();
     }
 
     vfunc_startup(): void {
@@ -114,7 +117,7 @@ export class GSolidApp extends Gtk.Application {
             this.disposer = dispose;
             const owner = getOwner()
             owner!.context = { [ApplicationContext.id]: this };
-                code(this);
+            code(this);
         });
     }
 
@@ -230,4 +233,23 @@ export function render(expr: () => JSX.Element, mount: Gtk.Widget) {
         mount.connect("destroy", dispose);
         insert(mount, expr);
     });
+}
+
+/**
+ * Get a session storage instance.
+ *
+ * The API designed in this way to allow unused part can be tree-shaking.
+ *
+ * @throws ReferenceError if {@link ApplicationContext} is not set
+ */
+export function useSessionStorage() {
+    const app = useApplication();
+
+    if (app.sessionStorage) {
+        return app.sessionStorage;
+    }
+
+    const storage = new SessionStorage();
+    app.sessionStorage = storage;
+    return storage;
 }
