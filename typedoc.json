@@ -8,7 +8,8 @@
         "src/fetch.ts",
         "src/store.ts",
         "src/web-ponyfill.ts",
-        "src/storage.ts"
+        "src/storage.ts",
+        "src/gobject.ts",
     ],
     "out": "./docs-dist",
     "includeVersion": true,
@@ -31,6 +32,9 @@
         },
         "@girs/gio-2.0": {
             "Gio.InputStream": "https://gjsify.github.io/docs/classes/Gio-2.0.Gio.InputStream.html"
+        },
+        "@girs/gdk-4.0": {
+            "Gdk.FrameClock": "https://gjsify.github.io/docs/classes/Gdk-4.0.Gdk.FrameClock.html"
         }
     }
 }

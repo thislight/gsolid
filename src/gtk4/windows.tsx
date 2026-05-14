@@ -17,6 +17,9 @@ import {
     children,
     disconnectOnCleanup,
     catchError,
+    onCleanup,
+    createSignal,
+    type Accessor,
 } from "../index.js";
 import { useWidget } from "../widget.jsx";
 import { createStore } from "solid-js/store";
@@ -254,4 +257,153 @@ export function useWindowSize(): WindowGeometry {
     onMount(resetWindowGeometry);
 
     return geometry;
+}
+
+/**
+ * Get the {@link Gdk.FrameClock} from the surface of the current window.
+ *
+ * The {@link Gdk.FrameClock} may changed if the toplevel of the window changed,
+ * please keep that in mind as you need to clean up resource if the value is changed.
+ *
+ * If you prefer Web-style `requestAnimationFrame`, use {@link createRAF}.
+ *
+ * @see {@link createRAF}
+ * @see {@link makeRequestAnimationFrame}
+ */
+export function createWindowFrameClock() {
+    const window = useWindow();
+    const surface = window.get_surface();
+    const [clk, setClk] = createSignal<Gdk.FrameClock>(
+        surface.get_frame_clock(),
+    );
+
+    const eneterMonitorId = surface.connect("enter-monitor", (surface) =>
+        setClk(surface.get_frame_clock()),
+    );
+    const leaveMonitorId = surface.connect("leave-monitor", (surface) =>
+        setClk(surface.get_frame_clock()),
+    );
+
+    onCleanup(() => {
+        surface.disconnect(eneterMonitorId);
+        surface.disconnect(leaveMonitorId);
+    });
+
+    return clk;
+}
+
+export type FrameRequestCallback = (timestamp: number) => void;
+
+/**
+ * Creates an auto-disposing requestAnimationFrame loop.
+ *
+ * If you prefer GTK-style {@link Gdk.FrameClock}, use {@link createWindowFrameClock}.
+ *
+ * @see {@link createWindowFrameClock}
+ * @see {@link makeRequestAnimationFrame}
+ *
+ * @example
+ * const [width, setWidth] = createSingal(50);
+ * const TARGET_WIDTH = 100;
+ * const ANIMATION_DUR_MS = 200;
+ * let tsStart = -1;
+ * let originalWidth = untrack(width);
+ *
+ * const [,start,end] = createRAF((ts) => {
+ *      const pg = ((ts - ts_start) / ANIMATION_DUR_MS);
+ *      setWidth(originalWidth + (TARGET_WIDTH - originalWidth) * pg);
+ *      if (pg >= 1) {
+ *          end();
+ *      }
+ *  });
+
+ * onMount(() => (tsStart = start()));
+ */
+export function createRAF(
+    callback: FrameRequestCallback,
+): readonly [
+    running: Accessor<boolean>,
+    start: () => number,
+    end: VoidFunction,
+] {
+    const frameClock = createWindowFrameClock();
+    const [running, setRunning] = createSignal(false);
+
+    createRenderEffect(() => {
+        const frclk = frameClock();
+        if (!frclk) return;
+        const listenId = frclk.connect("update", (clk) => {
+            const ts = clk.get_frame_time();
+            callback(ts);
+        });
+
+        onCleanup(() => {
+            frclk.disconnect(listenId);
+        });
+    });
+
+    createRenderEffect(() => {
+        const frclk = frameClock();
+        if (!frclk) return;
+        if (running()) {
+            frclk.begin_updating();
+        } else {
+            frclk.end_updating();
+        }
+    });
+
+    return [
+        running,
+        () => {
+            setRunning(true);
+            return frameClock()?.get_frame_time() ?? 0;
+        },
+        () => setRunning(false),
+    ];
+}
+
+function requestAnimationFrame(
+    clock: Gdk.FrameClock,
+    callback: FrameRequestCallback,
+) {
+    const id = clock.connect("update", (clock) => {
+        callback(clock.get_frame_time());
+        cancelAnimationFrame(clock, id);
+    });
+    clock.request_phase(Gdk.FrameClockPhase.UPDATE);
+    return id;
+}
+
+function cancelAnimationFrame(clock: Gdk.FrameClock, id: number) {
+    clock.disconnect(id);
+}
+
+/**
+ * Create a pair of functions emulates [requestAnimationFrame](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame)
+ * and [cancelAnimationFrame](https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame).
+ *
+ * Suits one-shot usage and DOM-compatibility.
+ *
+ * If you are working on animation, it's recommended to use {@link createRAF} or {@link createWindowFrameClock}.
+ * They are more efficient.
+ *
+ * **Known issues:** For reducing the abstraction cost, cancelling animation frame may sliently fail or cancels a wrong callback,
+ * as the {@link clock} changed. It's not recommended to do that for the risk.
+ *
+ * Opened to disscussion on this since me (Rubicon) thinks the `cancelAnimationFrame` is rarely used and it's OK to accept the risk
+ * and this can avoid much of additional memory access.
+ *
+ * @see {@link createRAF}
+ * @see {@link createWindowFrameClock}
+ */
+export function makeRequestAnimationFrame(
+    clock: Accessor<Gdk.FrameClock>,
+): readonly [
+    requestAnimationFrame: (callback: FrameRequestCallback) => number,
+    cancelAnimationFrame: (id: number) => void,
+] {
+    return [
+        (callback) => requestAnimationFrame(clock(), callback),
+        (id: number) => cancelAnimationFrame(clock(), id),
+    ];
 }
