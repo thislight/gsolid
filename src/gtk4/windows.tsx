@@ -125,7 +125,7 @@ export type WindowProps<T extends Gtk.Window = Gtk.Window> = {
  * @group Components
  */
 export const Window: Component<WindowProps & { open: boolean }> = (props) => {
-    const [p, rest] = splitProps(props, ["ref", "children", "open"]);
+    const [p, rest] = splitProps(props, ["children", "open"]);
     const ref: Gtk.Window = useWidget(Gtk.Window, rest);
     const child = children(() => (
         <WindowContext.Provider value={ref} children={p.children} />
