@@ -53,30 +53,30 @@ function inputStreamAdapter(
     if (typeof body == "string") {
         const chunk = new TextEncoder().encode(body);
         return [
-            Gio.MemoryInputStream.new_from_data(chunk, null),
+            Gio.MemoryInputStream.new_from_data(chunk),
             chunk.byteLength,
         ];
     } else if (body instanceof ArrayBuffer) {
         const chunk = new Uint8Array(body);
         return [
-            Gio.MemoryInputStream.new_from_data(chunk, null),
+            Gio.MemoryInputStream.new_from_data(chunk),
             chunk.byteLength,
         ];
     } else if (body instanceof DataView) {
         const chunk = new Uint8Array(body.buffer.slice(body.byteOffset));
         return [
-            Gio.MemoryInputStream.new_from_data(chunk, null),
+            Gio.MemoryInputStream.new_from_data(chunk),
             chunk.byteLength,
         ];
     } else if (body instanceof Uint8Array) {
         return [
-            Gio.MemoryInputStream.new_from_data(body, null),
+            Gio.MemoryInputStream.new_from_data(body),
             body.byteLength,
         ];
     } else if (body instanceof Uint8ClampedArray) {
         const chunk = new Uint8Array(body);
         return [
-            Gio.MemoryInputStream.new_from_data(chunk, null),
+            Gio.MemoryInputStream.new_from_data(chunk),
             chunk.byteLength,
         ];
     } else if (body != null) {
