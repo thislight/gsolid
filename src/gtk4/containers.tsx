@@ -38,7 +38,7 @@ export type BoxProps<T extends Gtk.Box = Gtk.Box> = {
    */
   baselinePosition?: Gtk.BaselinePosition;
 
-  children?: JSX.Element;
+  children?: JSX.Element | JSX.ArrayElement;
 } & GtkAccessibleProps &
   GtkOrientableProps &
   GtkWidgetProps<T> &

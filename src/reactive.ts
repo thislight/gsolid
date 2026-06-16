@@ -27,56 +27,58 @@
  * @module
  */
 import {
-    Accessor,
-    FlowComponent,
-    FlowProps,
-    JSX,
-    Owner,
-    createMemo,
-    createRenderEffect,
-    createRoot,
-    getOwner,
-    untrack,
+  Accessor,
+  FlowComponent,
+  FlowProps,
+  JSX,
+  Owner,
+  createMemo,
+  createRenderEffect,
+  createRoot,
+  getOwner,
+  untrack,
 } from "./index.js";
 import { widgetEquals } from "./widget.jsx";
 
 function lookup(owner: Owner | null, key: symbol | string): any {
-    return owner
-        ? owner.context && owner.context[key] !== undefined
-            ? owner.context[key]
-            : lookup(owner.owner, key)
-        : undefined;
+  return owner
+    ? owner.context && owner.context[key] !== undefined
+      ? owner.context[key]
+      : lookup(owner.owner, key)
+    : undefined;
 }
 
 function resolveChildren(c: any): any {
-    if (typeof c === "function" && !c.length) {
-        return resolveChildren((c as Function)());
-    }
-    if (Array.isArray(c)) {
-        return c.flatMap(resolveChildren)
-    }
-    return c;
+  if (typeof c === "function" && !c.length) {
+    return resolveChildren((c as Function)());
+  }
+  if (Array.isArray(c)) {
+    return c.flatMap(resolveChildren);
+  }
+  return c;
 }
 
-export type ResolvableJSXElement = JSX.Element;
-export type ResolvedChildren<T extends ResolvableJSXElement> = T extends any[] ? never : T;
+export type ResolvableJSXElement = JSX.Element | JSX.ArrayElement;
+export type ResolvedChildren<T extends ResolvableJSXElement> = T extends any[]
+  ? never
+  : T;
 export type ChildrenResult<T extends ResolvableJSXElement> = Accessor<
-    ResolvedChildren<T>
+  ResolvedChildren<T>
 > & {
-    toArray: () => ResolvedChildren<T>[];
+  toArray: () => ResolvedChildren<T>[];
 };
 export type ChildrenAccessorResult<T, A extends T[] = T[]> = Accessor<T> & {
-    toArray: () => A;
+  toArray: () => A;
 };
 
 type AnyChildrenResult = Accessor<any> & { toArray: () => any };
 
 export function children<T extends ResolvableJSXElement>(
-    fn: Accessor<T>
+  fn: Accessor<T>,
 ): ChildrenResult<T>;
 
 export function children<A>(
-    fn: Accessor<Accessor<A>>
+  fn: Accessor<Accessor<A>>,
 ): ChildrenAccessorResult<A>;
 
 /**
@@ -117,48 +119,48 @@ export function children<A>(
  * @returns
  */
 export function children(fn: Accessor<any>): any {
-    const c = createMemo(fn, undefined, { equals: widgetEquals });
-    const memo = createMemo(() => resolveChildren(c()));
-    (memo as AnyChildrenResult).toArray = () => {
-        const c = memo();
-        return Array.isArray(c) ? c : c != null ? [c] : [];
-    };
-    return memo as AnyChildrenResult;
+  const c = createMemo(fn, undefined, { equals: widgetEquals });
+  const memo = createMemo(() => resolveChildren(c()));
+  (memo as AnyChildrenResult).toArray = () => {
+    const c = memo();
+    return Array.isArray(c) ? c : c != null ? [c] : [];
+  };
+  return memo as AnyChildrenResult;
 }
 
 export interface EffectOptions {
-    name?: string;
+  name?: string;
 }
 
 function createProvider(id: symbol, options?: EffectOptions) {
-    return function provider(
-        props: FlowProps<{ value: unknown }, JSX.Element | undefined>
-    ) {
-        let res: ChildrenResult<JSX.Element | undefined>;
-        createRenderEffect(
-            () =>
-                (res = untrack(() => {
-                    const Owner = getOwner();
-                    Owner!.context = { [id]: props.value };
-                    return children(() => props.children);
-                })),
-            undefined,
-            options
-        );
-        return res! as unknown as JSX.Element;
-    };
+  return function provider(
+    props: FlowProps<{ value: unknown }, JSX.Element | undefined>,
+  ) {
+    let res: ChildrenResult<JSX.Element | undefined>;
+    createRenderEffect(
+      () =>
+        (res = untrack(() => {
+          const Owner = getOwner();
+          Owner!.context = { [id]: props.value };
+          return children(() => props.children);
+        })),
+      undefined,
+      options,
+    );
+    return res! as unknown as JSX.Element;
+  };
 }
 
 export type ContextProviderComponent<T> = FlowComponent<
-    { value: T },
-    JSX.Element | undefined
+  { value: T },
+  JSX.Element | undefined
 >;
 
 // Context API
 export interface Context<T> {
-    id: symbol;
-    Provider: ContextProviderComponent<T>;
-    defaultValue: T;
+  id: symbol;
+  Provider: ContextProviderComponent<T>;
+  defaultValue: T;
 }
 
 /**
@@ -179,19 +181,19 @@ export interface Context<T> {
  * @returns The context that contains the Provider Component and that can be used with `useContext`
  */
 export function createContext<T>(
-    defaultValue?: undefined,
-    options?: EffectOptions
+  defaultValue?: undefined,
+  options?: EffectOptions,
 ): Context<T | undefined>;
 export function createContext<T>(
-    defaultValue: T,
-    options?: EffectOptions
+  defaultValue: T,
+  options?: EffectOptions,
 ): Context<T>;
 export function createContext<T>(
-    defaultValue?: T,
-    options?: EffectOptions
+  defaultValue?: T,
+  options?: EffectOptions,
 ): Context<T | undefined> {
-    const id = Symbol("context");
-    return { id, Provider: createProvider(id, options), defaultValue };
+  const id = Symbol("context");
+  return { id, Provider: createProvider(id, options), defaultValue };
 }
 
 /**
@@ -203,8 +205,8 @@ export function createContext<T>(
  * @description https://www.solidjs.com/docs/latest/api#usecontext
  */
 export function useContext<T>(context: Context<T>): T {
-    let ctx;
-    return (ctx = lookup(getOwner(), context.id)) !== undefined
-        ? ctx
-        : context.defaultValue;
+  let ctx;
+  return (ctx = lookup(getOwner(), context.id)) !== undefined
+    ? ctx
+    : context.defaultValue;
 }
