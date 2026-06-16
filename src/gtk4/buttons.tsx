@@ -2,88 +2,88 @@
  * @license Apache-2.0
  * @module
  */
-import { useWidget } from "../widget.jsx";
+import { createWidget } from "../widget.jsx";
 import { Component, JSX, mergeProps, splitProps } from "../index.js";
 import Gtk from "gi://Gtk?version=4.0";
 import { GtkWidgetProps, GtkAccessibleProps, RefAble } from "./common.js";
 
 export type ButtonPropBase = {
-    /**
-     * 
-     * @param e 
-     * @returns 
-     * @event
-     */
-    onClicked?: (e: Gtk.Button) => void;
-    /**
-     * 
-     * @param e 
-     * @returns 
-     * @event
-     */
-    onActivate?: (e: Gtk.Button) => void;
-    iconName?: string;
-    hasFrame?: string;
-    canShrink?: boolean;
-    useUnderline?: boolean;
+  /**
+   *
+   * @param e
+   * @returns
+   * @event
+   */
+  onClicked?: (e: Gtk.Button) => void;
+  /**
+   *
+   * @param e
+   * @returns
+   * @event
+   */
+  onActivate?: (e: Gtk.Button) => void;
+  iconName?: string;
+  hasFrame?: boolean;
+  canShrink?: boolean;
+  useUnderline?: boolean;
 } & GtkWidgetProps<Gtk.Button> &
-    GtkAccessibleProps &
-    RefAble<Gtk.Button>;
+  GtkAccessibleProps &
+  RefAble<Gtk.Button>;
 
 export type ButtonProps = (
-    | { label?: string; children?: undefined }
-    | { children?: JSX.Element; label?: undefined }
+  | { label?: string; children?: undefined }
+  | { children?: JSX.Element; label?: undefined }
 ) &
-    ButtonPropBase;
+  ButtonPropBase;
 
 /**
  *
  * @group Components
  */
 export const Button: Component<ButtonProps> = (props) => {
-    const [p, rest] = splitProps(props, ["children"]);
-    return useWidget(
-        Gtk.Button,
-        mergeProps(
-            {
-                get child() {
-                    return p.children;
-                },
-            },
-            rest
-        )
-    );
+  const [p, rest] = splitProps(props, ["children"]);
+  return createWidget(
+    Gtk.Button,
+    mergeProps(
+      {
+        get child() {
+          return p.children;
+        },
+      },
+      rest,
+    ),
+  );
 };
 
 export type CheckButtonPropBase<T extends Gtk.CheckButton = Gtk.CheckButton> = {
-    active?: boolean;
-    group?: T;
-    inconsistent?: boolean;
-    useUnderline?: boolean;
-    // Signals
-    /**
-     * 
-     * @param e 
-     * @returns 
-     * @event
-     */
-    onActivate?: (e: T) => void;
-    /**
-     * 
-     * @param e 
-     * @returns 
-     * @event
-     */
-    onToggled?: (e: T) => void;
+  active?: boolean;
+  group?: T;
+  inconsistent?: boolean;
+  useUnderline?: boolean;
+  // Signals
+  /**
+   *
+   * @param e
+   * @returns
+   * @event
+   */
+  onActivate?: (e: T) => void;
+  /**
+   *
+   * @param e
+   * @returns
+   * @event
+   */
+  onToggled?: (e: T) => void;
 } & GtkWidgetProps<T> &
-    GtkAccessibleProps &
-    RefAble<T>;
+  GtkAccessibleProps &
+  RefAble<T>;
 
 export type CheckButtonProps<T extends Gtk.CheckButton = Gtk.CheckButton> = (
-    | { children?: JSX.Element; label?: undefined }
-    | { label?: string; children?: undefined }
+  | { children?: JSX.Element; label?: undefined }
+  | { label?: string; children?: undefined }
 ) &
-    CheckButtonPropBase<T>;
+  CheckButtonPropBase<T>;
 
 /**
  * A CheckButton places a label next to an indicator.
@@ -123,16 +123,16 @@ export type CheckButtonProps<T extends Gtk.CheckButton = Gtk.CheckButton> = (
  * @group Components
  */
 export const CheckButton: Component<CheckButtonProps> = (props) => {
-    const [p, rest] = splitProps(props, ["children"]);
-    return useWidget(
-        Gtk.CheckButton,
-        mergeProps(
-            {
-                get child() {
-                    return p.children;
-                },
-            },
-            rest
-        )
-    );
+  const [p, rest] = splitProps(props, ["children"]);
+  return createWidget(
+    Gtk.CheckButton,
+    mergeProps(
+      {
+        get child() {
+          return p.children;
+        },
+      },
+      rest,
+    ),
+  );
 };

@@ -3,15 +3,15 @@
  * @module
  */
 import {
-    Ref,
-    splitProps,
-    JSX,
-    spreadProps,
-    ComponentProps,
-    ValidComponent,
-    createMemo,
-    untrack,
-    createRenderEffect,
+  Ref,
+  splitProps,
+  JSX,
+  spreadProps,
+  ComponentProps,
+  ValidComponent,
+  createMemo,
+  untrack,
+  createRenderEffect,
 } from "./index.js";
 
 /**
@@ -60,56 +60,41 @@ import {
  * @param forwardTo
  */
 export function forwardRef<T>(ref: T, forwardTo?: Ref<T>): T {
-    if (typeof forwardTo == "function") {
-        // the ref passing in component is always a function
-        (forwardTo as (ref: T) => void)(ref);
-    }
-    return ref;
+  if (typeof forwardTo == "function") {
+    // the ref passing in component is always a function
+    (forwardTo as (ref: T) => void)(ref);
+  }
+  return ref;
 }
 
-export interface WidgetProps<T extends JSX.Element> {
-    ref?: Ref<T>;
-    Widget: new () => T;
-    [key: string]: unknown;
-}
+export type WidgetProps<T extends {}> = Omit<Partial<T>, "ref"> & {
+  ref?: Ref<T>;
+};
 
 /**
  * Create Gtk widgets as components.
  *
- * If you need a ref of the widget, consider {@link Widget}.
- *
  * You can just pass received props or the result of `splitProps`, or you will lost reactivity.
  *
- * @param widgetClass the widget constructor
+ * @param WidgetKlass the widget constructor
  * @param props properties
  * @returns
  */
-export function useWidget<T extends JSX.Element>(
-    widgetClass: new () => T,
-    props: { ref?: Ref<T>; [key: string]: unknown }
+export function createWidget<T extends {}>(
+  WidgetKlass: new () => T,
+  props: WidgetProps<T>,
 ): T {
-    const node = new widgetClass();
-    createRenderEffect(() => spreadProps(node, props));
-    forwardRef(node, props.ref);
-    return node;
-}
-
-/**
- * This component wraps GTK widgets as a component.
- *
- * If you don't need a ref of the widget, consider {@link useWidget}.
- *
- * You can use {@link forwardRef} to forward references.
- */
-export function Widget<T extends JSX.Element>(props: WidgetProps<T>): T {
-    const [{ Widget: Klass }, rest] = splitProps(props, ["Widget"]);
-    return useWidget(Klass, rest);
+  const node = new WidgetKlass();
+  const [internal, rest] = splitProps(props, ["ref"]);
+  createRenderEffect(() => spreadProps(node, rest));
+  forwardRef(node, internal.ref);
+  return node;
 }
 
 export type DynamicProps<T extends ValidComponent, P = ComponentProps<T>> = {
-    [K in keyof P]: P[K];
+  [K in keyof P]: P[K];
 } & {
-    component: T | undefined;
+  component: T | undefined;
 };
 
 /**
@@ -118,14 +103,14 @@ export type DynamicProps<T extends ValidComponent, P = ComponentProps<T>> = {
  * @returns
  */
 export function Dynamic<T extends ValidComponent>(
-    props: DynamicProps<T>
+  props: DynamicProps<T>,
 ): JSX.Element {
-    const [p, rest] = splitProps(props, ["component"]);
-    const cache = createMemo(() => p.component);
-    return createMemo(() => {
-        const component = cache();
-        return untrack<JSX.Element>(() => component(rest));
-    }) as unknown as JSX.Element;
+  const [p, rest] = splitProps(props, ["component"]);
+  const cache = createMemo(() => p.component);
+  return createMemo(() => {
+    const component = cache();
+    return untrack<JSX.Element>(() => component(rest));
+  }) as unknown as JSX.Element;
 }
 
 /**
@@ -140,18 +125,18 @@ export function Dynamic<T extends ValidComponent>(
  * @returns
  */
 export function widgetEquals(a: unknown, b: unknown) {
-    if (Array.isArray(a) && Array.isArray(b)) {
-        if (a.length == b.length) {
-            for (let i = 0; i < a.length; i++) {
-                if (a[i] !== b[i]) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            return false;
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length == b.length) {
+      for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) {
+          return false;
         }
+      }
+      return true;
     } else {
-        return a === b;
+      return false;
     }
+  } else {
+    return a === b;
+  }
 }
