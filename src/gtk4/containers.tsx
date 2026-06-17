@@ -74,17 +74,17 @@ export type CenterBoxProps<T extends Gtk.CenterBox = Gtk.CenterBox> = (
       startWidget?: Gtk.Widget;
       centerWidget?: Gtk.Widget;
       endWidget?: Gtk.Widget;
-      children?: never;
+      start?: never;
+      center?: never;
+      end?: never;
     }
   | {
       startWidget?: never;
       centerWidget?: never;
       endWidget?: never;
-      children?:
-        | [Gtk.Widget | null, Gtk.Widget | null, Gtk.Widget | null]
-        | [Gtk.Widget | null, Gtk.Widget | null]
-        | [Gtk.Widget | null]
-        | [];
+      start?: Gtk.Widget;
+      center?: Gtk.Widget;
+      end?: Gtk.Widget;
     }
 ) &
   CenterBoxPropBase<T>;
@@ -92,65 +92,32 @@ export type CenterBoxProps<T extends Gtk.CenterBox = Gtk.CenterBox> = (
 /**
  * CenterBox arranges three children in a row, keeping the middle child centered as well as possible.
  *
- * Using `children` property (instead of `*Widget` properties), it accepts five variants:
- *
- * - `undefined` or `[]`(array with zero item): reset all three children
- * - `[JSX.Element]`: the only element will be set as the center child
- * - `[JSX.Element, JSX.Element]`: the start and the center
- * - `[JSX.Element, JSX.Element, JSX.Element]`: the start, the center and the end
- *
- * Slots also accept `null`, `null` will reset corresponding child.
- *
  * @since Gtk 4.10
  * @group Components
  */
-export const CenterBox: Component<CenterBoxProps> = (props) => {
-  let ref: Gtk.CenterBox;
-  const [p, rest] = splitProps(props, ["children", "ref"]);
-
-  const setChildrenOnce = (
-    start: Gtk.Widget | null,
-    center: Gtk.Widget | null,
-    end: Gtk.Widget | null,
-  ) => {
-    ref.set_start_widget(start);
-    ref.set_center_widget(center);
-    ref.set_end_widget(end);
-  };
-
-  const elements = createMemo(() => p.children);
-
-  createEffect(() => {
-    const children = elements();
-    if (children) {
-      switch (children.length) {
-        case 3: {
-          const [start, center, end] = children;
-          setChildrenOnce(start, center, end);
-          break;
-        }
-        case 2: {
-          const [start, center] = children;
-          setChildrenOnce(start, center, null);
-          break;
-        }
-        case 1: {
-          const [center] = children;
-          setChildrenOnce(null, center, null);
-          break;
-        }
-        default: {
-          setChildrenOnce(null, null, null);
-        }
-      }
-    } else {
-      setChildrenOnce(null, null, null);
-    }
-  });
+export const CenterBox = (props: CenterBoxProps) => {
+  const [p, rest] = splitProps(props, ["start", "center", "end", "ref"]);
 
   return createWidget(Gtk.CenterBox, {
     ...rest,
-    ref: (r) => (ref = forwardRef(r, p.ref)),
+    ref: (r) => {
+      if (Object.hasOwn(props, "start")) {
+        createRenderEffect(() => {
+          r.set_start_widget(props.start || null);
+        });
+      }
+      if (Object.hasOwn(props, "center")) {
+        createRenderEffect(() => {
+          r.set_center_widget(props.center || null);
+        });
+      }
+      if (Object.hasOwn(props, "end")) {
+        createRenderEffect(() => {
+          r.set_end_widget(props.end || null);
+        });
+      }
+      forwardRef(r, p.ref);
+    },
   });
 };
 
