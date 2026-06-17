@@ -2,7 +2,7 @@
  * @license Apache-2.0
  * @module
  */
-import { createWidget, forwardRef } from "../widget.jsx";
+import { createWidget, forwardRef } from "../widget.js";
 import {
   Component,
   JSX,
