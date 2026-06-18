@@ -5,16 +5,36 @@ import {
   GtkWidgetProps,
   RefAble,
 } from "./common.js";
-import { createWidget, forwardRef } from "../widget.js";
+import { createWidget } from "../widget.js";
+import {
+  JSX,
+  splitProps,
+  createContext,
+  getOwner,
+  useContext,
+  untrack,
+  onCleanup,
+  createSignal,
+  createRenderEffect,
+} from "../index.js";
 
 export type StackProps<T extends Gtk.Stack> = GtkAccessibleProps &
   GtkWidgetProps<T> &
-  RefAble<T> & {};
+  RefAble<T> & {
+    children?: JSX.Element[];
+  };
+
+const StackContext = /* @__PURE__ */ createContext<Gtk.Stack | null>(null);
 
 /**
  * Shows one of its children at a time.
  *
- * @example ```tsx
+ * If `children` is specified, its element MUST be {@link StackPage}.
+ *
+ * Note: If your `children` is dynamic, the UI order may not reflect the elements' order.
+ *
+ * @example
+ * ```tsx
  * const Spam = () => {
  *   const stack = <Stack />;
  *   const mainPageId = createUniqueId();
@@ -23,11 +43,16 @@ export type StackProps<T extends Gtk.Stack> = GtkAccessibleProps &
  * };
  * ```
  *
- * @link https://docs.gtk.org/gtk4/class.Stack.html
- * @group components
+ * @group Components
  */
 export const Stack = (props: StackProps<Gtk.Stack>) => {
-  return createWidget(Gtk.Stack, props);
+  const [p, rest] = splitProps(props, ["children"]);
+  const ref = createWidget(Gtk.Stack, rest);
+  getOwner()!.context[StackContext.id] = ref;
+  createRenderEffect(() => {
+    p.children;
+  });
+  return ref;
 };
 
 export type StackSwitcherProps<T extends Gtk.StackSwitcher> =
@@ -41,8 +66,7 @@ export type StackSwitcherProps<T extends Gtk.StackSwitcher> =
 /**
  * Shows a row of buttons to switch between GtkStack pages.
  *
- * @link https://docs.gtk.org/gtk4/class.StackSwitcher.html
- * @group components
+ * @group Components
  */
 export const StackSwitcher = (props: StackSwitcherProps<Gtk.StackSwitcher>) => {
   return createWidget(Gtk.StackSwitcher, props);
@@ -57,8 +81,53 @@ export type StackSidebarProps<T extends Gtk.StackSidebar> = GtkWidgetProps<T> &
 /**
  * Uses a sidebar to switch between GtkStack pages.
  *
- * @link https://docs.gtk.org/gtk4/class.StackSidebar.html
+ * @group Components
  */
 export const StackSidebar = (props: StackSidebarProps<Gtk.StackSidebar>) => {
   return createWidget(Gtk.StackSidebar, props);
+};
+
+export type StackPageProps = {
+  name: string;
+  title: string;
+  children: Gtk.Widget;
+};
+
+export const StackPage = (props: StackPageProps) => {
+  const cx = useContext(StackContext);
+  if (!cx) {
+    throw new TypeError("<StackPage /> must be used under <Stack />");
+  }
+  const [ref, setRef] = createSignal<Gtk.StackPage>();
+
+  createRenderEffect(() => {
+    getOwner()!.context[StackContext.id] = null;
+    const name = untrack(() => props.name);
+    const title = untrack(() => props.title);
+    const c = props.children;
+
+    setRef(cx.add_titled(c, name, title));
+
+    onCleanup(() => cx.remove(c));
+  });
+
+  createRenderEffect(() => {
+    const r = ref();
+    if (!r) return;
+
+    if (props.name !== r.name) {
+      r.name = props.name;
+    }
+  });
+
+  createRenderEffect(() => {
+    const r = ref();
+    if (!r) return;
+
+    if (props.title !== r.title) {
+      r.title = props.title;
+    }
+  });
+
+  return <></>;
 };

@@ -8,51 +8,49 @@ export { spread as spreadProps } from "./jsx-runtime.js";
 
 // Forward Solid functions
 export {
-    ErrorBoundary,
-    createSignal,
-    createEffect,
-    createMemo,
-    createComputed,
-    createReaction,
-    createRenderEffect,
-    createResource,
-    createDeferred,
-    createUniqueId,
-    catchError,
-    onMount,
-    onCleanup,
-    untrack,
-    splitProps,
-    startTransition,
-    useTransition,
-    observable,
-    from,
-    mapArray,
-    indexArray,
-    lazy,
-    createSelector,
-    batch,
-    on,
-    createRoot,
-    getOwner,
-    runWithOwner,
-    mergeProps,
+  ErrorBoundary,
+  createSignal,
+  createEffect,
+  createMemo,
+  createComputed,
+  createReaction,
+  createRenderEffect,
+  createResource,
+  createDeferred,
+  createUniqueId,
+  catchError,
+  onMount,
+  onCleanup,
+  untrack,
+  splitProps,
+  startTransition,
+  useTransition,
+  observable,
+  from,
+  mapArray,
+  indexArray,
+  lazy,
+  createSelector,
+  batch,
+  on,
+  createRoot,
+  getOwner,
+  runWithOwner,
+  mergeProps,
+  For,
+  Index,
 } from "solid-js";
 
-export {
-    children,
-    createContext,
-    useContext,
-} from "./reactive.js";
+export { children, createContext, useContext } from "./reactive.js";
 
 export type {
-    Context,
-    EffectOptions,
-    ChildrenAccessorResult,
-    ChildrenResult,
-    ContextProviderComponent,
-    ResolvableJSXElement,
-    ResolvedChildren,
+  Context,
+  EffectOptions,
+  ChildrenAccessorResult,
+  ChildrenResult,
+  ContextProviderComponent,
+  ResolvableJSXElement,
+  ResolvedChildren,
 } from "./reactive.js";
 
 export { disconnectOnCleanup } from "./gobject.js";
@@ -68,7 +66,7 @@ export type Component<P = {}> = (props: P) => JSX.Element;
  * Extend props to forbid the `children` prop. Prevent passing `children` by chance.
  */
 export type VoidProps<P = {}> = P & {
-    children?: never;
+  children?: never;
 };
 
 /**
@@ -80,7 +78,7 @@ export type VoidComponent<P = {}> = Component<VoidProps<P>>;
  * Extend props to allow optional `children` prop with {@link JSX.Element}.
  */
 export type ParentProps<P = {}> = P & {
-    children?: JSX.Element;
+  children?: JSX.Element;
 };
 
 /**
@@ -92,7 +90,7 @@ export type ParentComponent<P = {}> = Component<ParentProps<P>>;
  * Extend props to require `children` prop with specific type `C`.
  */
 export type FlowProps<P = {}, C = JSX.Element> = P & {
-    children: C;
+  children: C;
 };
 
 /**
@@ -105,13 +103,12 @@ export type ValidComponent = keyof JSX.IntrinsicElements | Component<any>;
 /**
  * Props type of component type.
  */
-export type ComponentProps<T extends ValidComponent> = T extends Component<
-    infer P
->
+export type ComponentProps<T extends ValidComponent> =
+  T extends Component<infer P>
     ? P
     : T extends keyof JSX.IntrinsicElements
-    ? JSX.IntrinsicElements[T]
-    : Record<string, unknown>;
+      ? JSX.IntrinsicElements[T]
+      : Record<string, unknown>;
 
 /**
  * Types of `props.ref`
