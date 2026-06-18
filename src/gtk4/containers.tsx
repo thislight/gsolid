@@ -7,8 +7,6 @@ import {
   Component,
   JSX,
   children,
-  createEffect,
-  createMemo,
   createRenderEffect,
   splitProps,
 } from "../index.js";
@@ -21,6 +19,8 @@ import {
   RefAble,
 } from "./common.js";
 import { render } from "./index.js";
+
+export * from "./stack.jsx";
 
 export type BoxProps<T extends Gtk.Box = Gtk.Box> = {
   /**
