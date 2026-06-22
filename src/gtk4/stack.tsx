@@ -16,6 +16,7 @@ import {
   onCleanup,
   createSignal,
   createRenderEffect,
+  children,
 } from "../index.js";
 
 export type StackProps<T extends Gtk.Stack> = GtkAccessibleProps &
@@ -90,21 +91,25 @@ export const StackSidebar = (props: StackSidebarProps<Gtk.StackSidebar>) => {
 export type StackPageProps = {
   name: string;
   title: string;
-  children: Gtk.Widget;
+  children: JSX.Element;
 };
 
 export const StackPage = (props: StackPageProps) => {
   const cx = useContext(StackContext);
   if (!cx) {
-    throw new TypeError("<StackPage /> must be used under <Stack />");
+    throw new TypeError("<StackPage /> must be placed under <Stack />");
   }
   const [ref, setRef] = createSignal<Gtk.StackPage>();
 
+  const child = children(() => (
+    <StackContext.Provider value={null} children={props.children} />
+  ));
+
   createRenderEffect(() => {
-    getOwner()!.context[StackContext.id] = null;
     const name = untrack(() => props.name);
     const title = untrack(() => props.title);
-    const c = props.children;
+
+    const c = child();
 
     setRef(cx.add_titled(c, name, title));
 
