@@ -267,7 +267,7 @@ export function useMediaQuery<R>(
 }
 
 export function render(
-  expr: () => JSX.Element | JSX.ArrayElement,
+  expr: () => JSX.Element | JSX.ArrayElement | undefined,
   mount: Gtk.Widget,
 ) {
   return createRoot((dispose) => {

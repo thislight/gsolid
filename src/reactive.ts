@@ -34,7 +34,6 @@ import {
   Owner,
   createMemo,
   createRenderEffect,
-  createRoot,
   getOwner,
   untrack,
 } from "./index.js";
@@ -58,7 +57,7 @@ function resolveChildren(c: any): any {
   return c;
 }
 
-export type ResolvableJSXElement = JSX.Element | JSX.ArrayElement;
+export type ResolvableJSXElement = JSX.Element | JSX.ArrayElement | undefined;
 export type ResolvedChildren<T extends ResolvableJSXElement> = T extends any[]
   ? never
   : T;
