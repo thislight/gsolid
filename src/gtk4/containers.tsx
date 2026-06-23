@@ -4,13 +4,21 @@
  */
 import { createWidget, forwardRef } from "../widget.js";
 import {
+  Accessor,
   Component,
   JSX,
+  Owner,
+  Setter,
   children,
+  createMemo,
   createRenderEffect,
+  createRoot,
+  createSignal,
+  getOwner,
   splitProps,
 } from "../index.js";
 import Gtk from "gi://Gtk?version=4.0";
+import GObject from "gi://GObject";
 import {
   GtkAccessibleProps,
   GtkOrientableProps,
@@ -157,13 +165,125 @@ export const ScrolledWindow = (props: ScrolledWindowProps) => {
   });
 };
 
-export type ListViewProps<T extends Gtk.ListView = Gtk.ListView> = {
+export interface ItemBindedWidget<T extends GObject.Object> extends Gtk.Widget {
+  get item(): T;
+  set child(val: JSX.Element);
+}
+
+export type MapListItem<
+  T extends GObject.Object,
+  Widget extends ItemBindedWidget<T> = ItemBindedWidget<T>,
+> = (item: Accessor<Widget | undefined>) => JSX.Element;
+
+class GSolidListItemRoot<
+  T extends GObject.Object,
+  Widget extends ItemBindedWidget<T>,
+> {
+  dispose!: () => void;
+  arg: Accessor<Widget | undefined>;
+  setArg: Setter<Widget | undefined>;
+  parent: Widget;
+
+  constructor(
+    owner: Owner,
+    parent: Widget,
+    mapItem: (item: Accessor<Widget | undefined>) => JSX.Element,
+  ) {
+    this.parent = parent;
+    [this.arg, this.setArg] = createSignal<Widget | undefined>(parent, {
+      equals: false,
+    });
+    createRoot((dispose) => {
+      this.dispose = dispose;
+      createRenderEffect(() => {
+        parent.child = mapItem(this.arg);
+      });
+    }, owner);
+  }
+}
+
+export class GSolidListViewFactory<
+  T extends GObject.Object,
+  Widget extends ItemBindedWidget<T>,
+>
+  extends Gtk.SignalListItemFactory
+{
+  static {
+    GObject.registerClass(this);
+  }
+
+  private reactiveOwner: Owner;
+  private mapItem: (item: Accessor<Widget | undefined>) => JSX.Element;
+  private roots: GSolidListItemRoot<T, Widget>[] = [];
+  private widgets: Widget[] = [];
+
+  constructor(
+    reactiveOwner: Owner,
+    mapItem: (item: Accessor<Widget | undefined>) => JSX.Element,
+  ) {
+    super();
+    this.reactiveOwner = reactiveOwner;
+    this.mapItem = mapItem;
+    this.connect("setup", (_, object) => {
+      const listItem = object as Widget;
+      const nroot = new GSolidListItemRoot(
+        this.reactiveOwner,
+        listItem,
+        this.mapItem,
+      );
+      this.roots.push(nroot);
+      this.widgets.push(listItem);
+    });
+    this.connect("bind", (_, object) => {
+      const widget = object as Widget;
+      const idx = this.assertWidgetExists(widget);
+      const root = this.roots[idx];
+      root.setArg(() => widget);
+    });
+    this.connect("unbind", (_, object) => {
+      const widget = object as Widget;
+      const idx = this.assertWidgetExists(widget);
+      const root = this.roots[idx];
+      root.setArg();
+    });
+    this.connect("teardown", (_, object) => {
+      const widget = object as Widget;
+      const idx = this.assertWidgetExists(widget);
+      const root = this.roots[idx];
+      this.roots.splice(idx, 1);
+      this.widgets.splice(idx, 1);
+      root.dispose();
+    });
+  }
+
+  private assertWidgetExists(widget: Widget) {
+    const idx = this.widgets.indexOf(widget);
+    if (idx < 0) {
+      console.debug("[GSolidListViewFactory]", "list item:", widget);
+      throw new TypeError("list item is not registered");
+    }
+    return idx;
+  }
+}
+
+export type BindedListItem<T extends GObject.Object> = Gtk.ListItem &
+  ItemBindedWidget<T>;
+
+export type BindedHeader<T extends GObject.Object> = Gtk.ListHeader &
+  ItemBindedWidget<T>;
+
+export type ListViewProps<
+  T extends Gtk.ListView = Gtk.ListView,
+  Item extends GObject.Object = GObject.Object,
+> = {
   enableRubberband?: boolean;
-  factory: Gtk.ListItemFactory;
+  factory: (item: Accessor<BindedListItem<Item> | undefined>) => JSX.Element;
   /**
    * @since Gtk4.12
    */
-  headerFactory?: Gtk.ListItemFactory;
+  headerFactory?: (
+    item: Accessor<BindedHeader<Item> | undefined>,
+  ) => JSX.Element;
   model: Gtk.SelectionModel;
   showSeparators?: boolean;
   singleClickActivate?: boolean;
@@ -187,12 +307,53 @@ export type ListViewProps<T extends Gtk.ListView = Gtk.ListView> = {
 /**
  * ListView presents a large dynamic list of items.
  *
- * {@link Box} is recommended for small amount of items.
+ * GSolid replace the widget factories with the reactive versions.
+ * If you want to use the original `props.factory` or `props.headerFactory`, use {@link createWidget}:
+ *
+ * ```tsx
+ * createWidget(Gtk.ListView, {})
+ * ```
+ *
+ * @see {@link Box} is recommended for small amount of items.
  * @group Components
  */
-export const ListView = (props: ListViewProps) => {
-  return createWidget(Gtk.ListView, props);
-};
+export function ListView<Item extends GObject.Object>(
+  props: ListViewProps<Gtk.ListView, Item>,
+) {
+  const [p, rest] = splitProps(props, ["factory", "headerFactory"]);
+
+  const factory = createMemo(() => {
+    return new GSolidListViewFactory<Item, BindedListItem<Item>>(
+      getOwner()!,
+      p.factory,
+    );
+  });
+
+  const headerFactory = Object.hasOwn(p, "headerFactory")
+    ? createMemo(() =>
+        p.headerFactory
+          ? new GSolidListViewFactory<Item, BindedHeader<Item>>(
+              getOwner()!,
+              p.headerFactory,
+            )
+          : undefined,
+      )
+    : undefined;
+
+  return createWidget(Gtk.ListView, {
+    ...rest,
+    get factory() {
+      return factory();
+    },
+    ...(headerFactory
+      ? {
+          get headerFactory() {
+            return headerFactory();
+          },
+        }
+      : {}),
+  });
+}
 
 export type HeaderBarProps<T extends Gtk.HeaderBar = Gtk.HeaderBar> = {
   decorationLayout?: string;
