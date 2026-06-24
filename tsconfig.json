@@ -39,6 +39,8 @@
     ],
     "types": [
       "@girs/gjs",
+      "@girs/gio-2.0",
+      "@girs/gobject-2.0",
       "@girs/gtk-4.0",
       "@girs/soup-3.0",
       "@girs/girepository-2.0",
