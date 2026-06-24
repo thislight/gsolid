@@ -15,6 +15,7 @@ import {
   createRoot,
   createSignal,
   getOwner,
+  onCleanup,
   splitProps,
 } from "../index.js";
 import Gtk from "gi://Gtk?version=4.0";
@@ -340,7 +341,7 @@ export function ListView<Item extends GObject.Object>(
       )
     : undefined;
 
-  return createWidget(Gtk.ListView, {
+  const ref = createWidget(Gtk.ListView, {
     ...rest,
     get factory() {
       return factory();
@@ -353,6 +354,17 @@ export function ListView<Item extends GObject.Object>(
         }
       : {}),
   });
+
+  onCleanup(() => {
+    // Workaround: force the GC cleaning the model and factories
+    ref.model = null!;
+    ref.factory = null!;
+    if (ref.headerFactory) {
+      ref.headerFactory = null!;
+    }
+  });
+
+  return ref;
 }
 
 export type HeaderBarProps<T extends Gtk.HeaderBar = Gtk.HeaderBar> = {
