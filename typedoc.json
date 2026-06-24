@@ -25,13 +25,17 @@
     "solid-js": {
       "ResourceOptions": "https://docs.solidjs.com/reference/basic-reactivity/create-resource#related-types"
     },
+    "@girs/gobject-2.0": {
+      "GObject.Object": "https://gjsify.github.io/docs/classes/GObject-2.0.GObject.Object.html"
+    },
     "@girs/gtk-4.0": {
       "Gtk.Box": "https://gjsify.github.io/docs/classes/Gtk-4.0.Gtk.Box.html",
       "Gtk.CheckButton": "https://gjsify.github.io/docs/classes/Gtk-4.0.Gtk.CheckButton.html",
       "Gtk.Application": "https://gjsify.github.io/docs/classes/Gtk-4.0.Gtk.Application.html"
     },
     "@girs/gio-2.0": {
-      "Gio.InputStream": "https://gjsify.github.io/docs/classes/Gio-2.0.Gio.InputStream.html"
+      "Gio.InputStream": "https://gjsify.github.io/docs/classes/Gio-2.0.Gio.InputStream.html",
+      "Gio.ListModel": "https://gjsify.github.io/docs/classes/Gio-2.0.Gio.ListModel.html"
     },
     "@girs/gdk-4.0": {
       "Gdk.FrameClock": "https://gjsify.github.io/docs/classes/Gdk-4.0.Gdk.FrameClock.html"

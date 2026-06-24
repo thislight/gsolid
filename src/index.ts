@@ -53,7 +53,7 @@ export type {
   ResolvedChildren,
 } from "./reactive.js";
 
-export { disconnectOnCleanup } from "./gobject.js";
+export { disconnectOnCleanup, createArrayListModel } from "./gobject.js";
 
 export type { Accessor, AccessorArray, Setter, Owner } from "solid-js";
 
