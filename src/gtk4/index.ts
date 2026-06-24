@@ -15,6 +15,7 @@ import {
   createSignal,
   getOwner,
   type JSX,
+  onCleanup,
 } from "../index.js";
 import { useWindow } from "./windows.jsx";
 import { insert } from "../jsx-runtime.js";
@@ -121,12 +122,12 @@ export class GSolidApp extends Gtk.Application {
   }
 
   vfunc_shutdown(): void {
-    super.vfunc_shutdown();
-
     if (this.disposer) {
       const disposer = this.disposer;
       disposer();
     }
+
+    super.vfunc_shutdown();
   }
 }
 
