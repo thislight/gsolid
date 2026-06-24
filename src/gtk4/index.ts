@@ -271,7 +271,8 @@ export function render(
   mount: Gtk.Widget,
 ) {
   return createRoot((dispose) => {
-    mount.connect("destroy", dispose);
+    const id = mount.connect("destroy", dispose);
+    onCleanup(() => mount.disconnect(id));
     insert(mount, expr);
   });
 }
