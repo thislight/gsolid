@@ -5,7 +5,6 @@ const entryPoints = [
   "src/jsx-runtime.ts",
   "src/gtk4/common.ts",
   "src/gtk4/index.ts",
-  "src/fetch.ts",
   "src/web-ponyfill.ts",
   "src/reactive.ts",
   "src/store.ts",

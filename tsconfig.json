@@ -3,7 +3,6 @@
     "src/index.ts",
     "src/jsx-runtime.ts",
     "src/widget.ts",
-    "src/fetch.ts",
     "src/web-ponyfill.ts",
     "src/reactive.ts",
     "src/store.ts",

@@ -1,92 +1,87 @@
 {
-    "name": "gsolid",
-    "version": "0.2.0",
-    "description": "GTK renderer for solid-js",
-    "main": "./dist/index.js",
-    "type": "module",
-    "types": "./types/index.d.ts",
-    "sideEffect": false,
-    "exports": {
-        ".": {
-            "types": "./types/index.d.ts",
-            "import": "./dist/index.js",
-            "require": "./dist/index.cjs"
-        },
-        "./jsx-runtime": {
-            "types": "./types/jsx-runtime.d.ts",
-            "import": "./dist/jsx-runtime.js",
-            "require": "./dist/jsx-runtime.cjs"
-        },
-        "./widget": {
-            "types": "./types/widget.d.ts",
-            "import": "./dist/widget.jsx",
-            "require": null
-        },
-        "./gtk4": {
-            "types": "./types/gtk4/index.d.ts",
-            "import": "./dist/gtk4/index.js",
-            "require": "./dist/gtk4/index.cjs"
-        },
-        "./fetch": {
-            "types": "./types/fetch.d.ts",
-            "import": "./dist/fetch.js",
-            "require": "./dist/fetch.cjs"
-        },
-        "./store": {
-            "types": "./types/store.d.ts",
-            "import": "./dist/store.js",
-            "require": "./dist/store.cjs"
-        },
-        "./web-ponyfill": {
-            "types": "./types/web-ponyfill.d.ts",
-            "import": "./dist/web-ponyfill.js",
-            "require": "./dist/web-ponyfill.cjs"
-        },
-        "./storage": {
-            "types": "./types/storage.d.ts",
-            "import": "./dist/storage.js",
-            "require": "./dist/storage.cjs"
-        }
+  "name": "gsolid",
+  "version": "0.2.0",
+  "description": "GTK renderer for solid-js",
+  "main": "./dist/index.js",
+  "type": "module",
+  "types": "./types/index.d.ts",
+  "sideEffect": false,
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
-    "files": [
-        "./dist/**",
-        "./types/**",
-        "./.editorconfig",
-        "./LICENSE",
-        "./tsconfig.json",
-        "./README.md"
-    ],
-    "scripts": {
-        "build:types": "tsc",
-        "build:esm": "tsx build.ts",
-        "prepare": "npm run build:esm && npm run build:types && npm run build:doc",
-        "build:doc": "typedoc"
+    "./jsx-runtime": {
+      "types": "./types/jsx-runtime.d.ts",
+      "import": "./dist/jsx-runtime.js",
+      "require": "./dist/jsx-runtime.cjs"
     },
-    "keywords": [
-        "gjs",
-        "solid-js",
-        "jsx",
-        "tsx"
-    ],
-    "maintainers": [
-        "Rubicon Rowe <l1589002388@gmail.com>"
-    ],
-    "license": "Apache-2.0",
-    "dependencies": {
-        "solid-js": "^1.9.12"
+    "./widget": {
+      "types": "./types/widget.d.ts",
+      "import": "./dist/widget.jsx",
+      "require": null
     },
-    "devDependencies": {
-        "@girs/gio-2.0": "2.78.0-3.3.0",
-        "@girs/girepository-2.0": "1.78.1-3.3.0",
-        "@girs/gjs": "^3.3.0",
-        "@girs/gobject-2.0": "2.78.0-3.3.0",
-        "@girs/gtk-4.0": "4.12.5-3.3.0",
-        "@girs/soup-3.0": "3.4.4-3.3.0",
-        "esbuild": "^0.28.0",
-        "npm-run-all": "^4.1.5",
-        "tsx": "^4.22.0",
-        "typedoc": "^0.28.1",
-        "typescript": "^5.1.6"
+    "./gtk4": {
+      "types": "./types/gtk4/index.d.ts",
+      "import": "./dist/gtk4/index.js",
+      "require": "./dist/gtk4/index.cjs"
     },
-    "packageManager": "pnpm@11.1.2+sha512.415a1cc25974731e75455c1468371be74c5aa5fb7621b50d4056d222451609f11412f23fd602e6169f1e060466641f798597e1be961a10688836a67b16569499"
+    "./store": {
+      "types": "./types/store.d.ts",
+      "import": "./dist/store.js",
+      "require": "./dist/store.cjs"
+    },
+    "./web-ponyfill": {
+      "types": "./types/web-ponyfill.d.ts",
+      "import": "./dist/web-ponyfill.js",
+      "require": "./dist/web-ponyfill.cjs"
+    },
+    "./storage": {
+      "types": "./types/storage.d.ts",
+      "import": "./dist/storage.js",
+      "require": "./dist/storage.cjs"
+    }
+  },
+  "files": [
+    "./dist/**",
+    "./types/**",
+    "./.editorconfig",
+    "./LICENSE",
+    "./tsconfig.json",
+    "./README.md"
+  ],
+  "scripts": {
+    "build:types": "tsc",
+    "build:esm": "tsx build.ts",
+    "prepare": "npm run build:esm && npm run build:types && npm run build:doc",
+    "build:doc": "typedoc"
+  },
+  "keywords": [
+    "gjs",
+    "solid-js",
+    "jsx",
+    "tsx"
+  ],
+  "maintainers": [
+    "Rubicon Rowe <l1589002388@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "solid-js": "^1.9.12"
+  },
+  "devDependencies": {
+    "@girs/gio-2.0": "2.78.0-3.3.0",
+    "@girs/girepository-2.0": "1.78.1-3.3.0",
+    "@girs/gjs": "^3.3.0",
+    "@girs/gobject-2.0": "2.78.0-3.3.0",
+    "@girs/gtk-4.0": "4.12.5-3.3.0",
+    "@girs/soup-3.0": "3.4.4-3.3.0",
+    "esbuild": "^0.28.0",
+    "npm-run-all": "^4.1.5",
+    "tsx": "^4.22.0",
+    "typedoc": "^0.28.1",
+    "typescript": "^5.1.6"
+  },
+  "packageManager": "pnpm@11.1.2+sha512.415a1cc25974731e75455c1468371be74c5aa5fb7621b50d4056d222451609f11412f23fd602e6169f1e060466641f798597e1be961a10688836a67b16569499"
 }
